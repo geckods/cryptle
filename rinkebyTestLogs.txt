@@ -1,0 +1,1044 @@
+~/PycharmProjects/cryptle/react ································································································································· 3s Py cryptle Node 16.14.2 
+17:49:50
+❯ brownie console --network rinkeby
+Brownie v1.18.1 - Python development framework for Ethereum
+
+ReactProject is the active project.
+Brownie environment is ready.
+>>> accounts
+[]
+>>> accounts.add('PRIVATE_KEY_REMOVED')
+<LocalAccount '0x0140ad041E4336D0DF4C75EB90ef46CEC6d5B477'>
+>>> accounts[0].deploy(WordList)
+  File "<console>", line 1, in <module>
+  File "brownie/network/account.py", line 510, in deploy
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 752, in _make_transaction
+    exc = VirtualMachineError(e)
+  File "brownie/exceptions.py", line 96, in __init__
+    raise ValueError(exc["message"]) from None
+ValueError: replacement transaction underpriced
+>>> accounts[0].deploy(WordList)
+Transaction sent: 0xd9057e4967b648ffdab1ebbd1fb979a78bd84a051ce45baa9e28c25e1f2045ae
+  Gas price: 1.162230807 gwei   Gas limit: 17891813   Nonce: 6
+  WordList.constructor confirmed   Block: 10519961   Gas used: 16265285 (90.91%)
+  WordList deployed at: 0x29f0921D8C7B0DdA34d7B8352D3DAbe105e734a1
+
+Downloading from https://solc-bin.ethereum.org/macosx-amd64/solc-macosx-amd64-v0.8.11+commit.d7f03943
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 
+38.5M/38.5M [05:07<00:00, 125kiB/s]
+solc 0.8.11 successfully installed at: /Users/abhinav.ramachandran/.solcx/solc-v0.8.11
+/Users/abhinav.ramachandran/PycharmProjects/cryptle/venv/lib/python3.9/site-packages/brownie/network/contract.py:1180: BrownieCompilerWarning: 0x29f0921D8C7B0DdA34d7B8352D3DAbe105e734a1: 
+Locally compiled and on-chain bytecode do not match!
+  warnings.warn(
+<WordList Contract '0x29f0921D8C7B0DdA34d7B8352D3DAbe105e734a1'>
+>>> WordleRinkeby
+[]
+>>> WordleRinkeby.deploy
+<ContractConstructor 'WordleRinkeby.constructor(address wordListContractAddress, uint256 lotSizeInWeiParam, bool isTesting, uint64 vrfSubscriptionId)'>
+>>> WordleRinkeby.deploy('0x29f0921D8C7B0DdA34d7B8352D3DAbe105e734a1', 0.01, False, 2859)
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 527, in __call__
+    raise AttributeError(
+AttributeError: Final argument must be a dict of transaction parameters that includes a `from` field specifying the address to deploy from
+>>> WordleRinkeby.deploy('0x29f0921D8C7B0DdA34d7B8352D3DAbe105e734a1', 0.01, False, 2859, {'from':accounts[0]})
+Transaction sent: 0xd857f6f6cab9389e6179c4d258827dca05e21b5ca02d534e0dcf0e8566fbaec0
+  Gas price: 1.162230812 gwei   Gas limit: 25257424   Nonce: 7
+  WordleRinkeby.constructor confirmed   Block: 10520007   Gas used: 22961295 (90.91%)
+  WordleRinkeby deployed at: 0xDa1E8288DE108f5Db74b7553e85742e5f5aAC762
+
+<WordleRinkeby Contract '0xDa1E8288DE108f5Db74b7553e85742e5f5aAC762'>
+>>> wordleRinkeby
+
+KeyboardInterrupt
+>>> wordleRinkeby = WordleRinkeby
+>>> wordleRinkeby = WordleRinkeby[0]
+>>> wordleRinkeby.currGameState()
+0
+>>> wordleRinkeby.initGame({'from':accounts[0]})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0]})
+
+KeyboardInterrupt
+>>> accounts[0].estimate_gas
+<bound method _PrivateKeyAccount.estimate_gas of <LocalAccount '0x0140ad041E4336D0DF4C75EB90ef46CEC6d5B477'>>
+>>> wordleRinkeby.currGameState()
+0
+>>> wordleRinkeby.initGame({'from':accounts[0]})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gas-limit':3000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gas-limit':30000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gas-limit':300000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gas_limit':300000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 752, in _make_transaction
+    exc = VirtualMachineError(e)
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Execution reverted during call: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, include `allow_revert:True` as a transaction parameter.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gas_limit':30000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 752, in _make_transaction
+    exc = VirtualMachineError(e)
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Execution reverted during call: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, include `allow_revert:True` as a transaction parameter.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gas_limit':3000000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 752, in _make_transaction
+    exc = VirtualMachineError(e)
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Execution reverted during call: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, include `allow_revert:True` as a transaction parameter.
+>>> wordleRinkeby.initGame({'from':accounts[0]})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gasLimit':3000000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gasLimit':30000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gasLimit':300000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0], 'gasLimit':30000000000})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.initGame({'from':accounts[0]})
+Transaction sent: 0xaa462e627a01d72e3171119a497139304ef82989c24068c467ce079a43eae867
+  Gas price: 1.00000001 gwei   Gas limit: 107178   Nonce: 11
+  WordleRinkeby.initGame confirmed   Block: 10520171   Gas used: 97435 (90.91%)
+
+<Transaction '0xaa462e627a01d72e3171119a497139304ef82989c24068c467ce079a43eae867'>
+>>> wordleRinkeby.s_randomWords
+<ContractCall 's_randomWords(uint256)'>
+>>> wordleRinkeby.s_randomWords()
+  File "<console>", line 1, in <module>
+  File "brownie/network/multicall.py", line 115, in _proxy_call
+    result = ContractCall.__call__(*args, **kwargs)  # type: ignore
+  File "brownie/network/contract.py", line 1751, in __call__
+    return self.call(*args, block_identifier=block_identifier, override=override)
+  File "brownie/network/contract.py", line 1537, in call
+    tx.update({"to": self._address, "data": self.encode_input(*args)})
+  File "brownie/network/contract.py", line 1628, in encode_input
+    data = format_input(self.abi, args)
+  File "brownie/convert/normalize.py", line 20, in format_input
+    raise type(e)(f"{abi['name']} {e}") from None
+ValueError: s_randomWords Sequence has incorrect length, expected 1 but got 0
+>>> wordleRinkeby.s_randomWords(0)
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1751, in __call__
+    return self.call(*args, block_identifier=block_identifier, override=override)
+  File "brownie/network/contract.py", line 1542, in call
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 96, in __init__
+    raise ValueError(exc["message"]) from None
+ValueError: execution reverted
+>>> wordleRinkeby.s_randomWords
+<ContractCall 's_randomWords(uint256)'>
+>>> wordleRinkeby.s_randomWords(1)
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1751, in __call__
+    return self.call(*args, block_identifier=block_identifier, override=override)
+  File "brownie/network/contract.py", line 1542, in call
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 96, in __init__
+    raise ValueError(exc["message"]) from None
+ValueError: execution reverted
+>>> wordleRinkeby.s_randomWords(0)
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1751, in __call__
+    return self.call(*args, block_identifier=block_identifier, override=override)
+  File "brownie/network/contract.py", line 1542, in call
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 96, in __init__
+    raise ValueError(exc["message"]) from None
+ValueError: execution reverted
+>>> wordleRinkeby.c
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 765, in __getattribute__
+    raise AttributeError(f"Contract '{self._name}' object has no attribute '{name}'")
+AttributeError: Contract 'WordleRinkeby' object has no attribute 'c'
+>>> wordleRinkeby.currGameState
+<ContractCall 'currGameState()'>
+>>> wordleRinkeby.currGameState()
+1
+>>> accounts
+[<LocalAccount '0x0140ad041E4336D0DF4C75EB90ef46CEC6d5B477'>]
+>>> accounts.add()
+mnemonic: 'drift salad movie helmet border miracle dolphin private entire junior merit unaware'
+<LocalAccount '0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC'>
+>>> accounts[1]
+<LocalAccount '0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC'>
+>>> accounts[1].balance()
+0
+>>> accounts.add('PRIVATE_KEY_REMOVED')
+<LocalAccount '0xf322487D9b30aCaC92c911126cc538818e3BCA28'>
+>>> accounts
+[<LocalAccount '0x0140ad041E4336D0DF4C75EB90ef46CEC6d5B477'>, <LocalAccount '0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC'>, <LocalAccount '0xf322487D9b30aCaC92c911126cc538818e3BCA28'>]
+>>> accounts[2].balance()
+20098868337489402637
+>>> accounts[2].transfer(accounts[1], 2 ether)
+  File "<console>", line 1,
+    accounts[2].transfer(accounts[1], 2 ether)
+                                        ^
+SyntaxError: invalid syntax
+>>> accounts[2].transfer(accounts[1], '2 ether')
+Transaction sent: 0xc748ca3430574f585441502206bcd9ba3829d20909614ee852f376f15c351125
+  Gas price: 1.000000011 gwei   Gas limit: 21000   Nonce: 49
+  Transaction confirmed   Block: 10520306   Gas used: 21000 (100.00%)
+
+<Transaction '0xc748ca3430574f585441502206bcd9ba3829d20909614ee852f376f15c351125'>
+>>> accounts[1].private_key
+'0x19a205a94467ffc5f44af047b946beaf6d5c5261bae3f904f6fe42773e3cbe64'
+>>> accounts.add()
+mnemonic: 'amount rapid road ritual join reopen yard sad pair maple trick rapid'
+<LocalAccount '0x37d56A99E612562059F355C333d2165d5Aa92034'>
+>>> accounts
+[<LocalAccount '0x0140ad041E4336D0DF4C75EB90ef46CEC6d5B477'>, <LocalAccount '0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC'>, <LocalAccount '0xf322487D9b30aCaC92c911126cc538818e3BCA28'>, 
+<LocalAccount '0x37d56A99E612562059F355C333d2165d5Aa92034'>]
+>>> accounts[3].private_key
+'0x4a9270ff27891ac6fa7bcbe9fe3487d0838d66097435755e46af9a90dfe38693'
+>>> accounts[1].transfer(accounts[3],'2 ether')
+  File "<console>", line 1, in <module>
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 752, in _make_transaction
+    exc = VirtualMachineError(e)
+  File "brownie/exceptions.py", line 96, in __init__
+    raise ValueError(exc["message"]) from None
+ValueError: insufficient funds for gas * price + value
+>>> accounts[1].balance()
+2000000000000000000
+>>> accounts[2].balance()
+18098847337489171637
+>>> accounts[2].transfer(accounts[3],'2 ether')
+Transaction sent: 0xb9215cf6332f815be7228592bc8a1734abcf2609d4fae676bfa51a4f9734ab01
+  Gas price: 1.00000001 gwei   Gas limit: 21000   Nonce: 50
+countsiting for confirmation... -
+  Waiting for confirmation... /
+  Transaction confirmed   Block: 10520379   Gas used: 21000 (100.00%)
+
+<Transaction '0xb9215cf6332f815be7228592bc8a1734abcf2609d4fae676bfa51a4f9734ab01'>
+>>> accounts
+[<LocalAccount '0x0140ad041E4336D0DF4C75EB90ef46CEC6d5B477'>, <LocalAccount '0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC'>, <LocalAccount '0xf322487D9b30aCaC92c911126cc538818e3BCA28'>, 
+<LocalAccount '0x37d56A99E612562059F355C333d2165d5Aa92034'>]
+>>>
+>>> [x.balance() for x in accounts]
+[506351814128182688, 2000000000000000000, 16098826337488961637, 2000000000000000000]
+>>> wordleRinkeby.signUp({'from':accounts[1], 'value':'0.1 ether'})
+Transaction sent: 0xe2fcab1774d658a29bce612ca871b9222e63097dc693bc4945af383f70a220b7
+  Gas price: 1.00000001 gwei   Gas limit: 182745   Nonce: 0
+  WordleRinkeby.signUp confirmed   Block: 10520394   Gas used: 166132 (90.91%)
+
+<Transaction '0xe2fcab1774d658a29bce612ca871b9222e63097dc693bc4945af383f70a220b7'>
+>>> wordleRinkeby.signUp({'from':accounts[2], 'value':'0.1 ether'})
+Transaction sent: 0x19a32eb0b0788e3d20a0ec0d04c6559f304d26215c6c7411762c4b8c7a43fbdc
+  Gas price: 1.00000001 gwei   Gas limit: 142045   Nonce: 51
+  WordleRinkeby.signUp confirmed   Block: 10520396   Gas used: 129132 (90.91%)
+
+<Transaction '0x19a32eb0b0788e3d20a0ec0d04c6559f304d26215c6c7411762c4b8c7a43fbdc'>
+>>> wordleRinkeby.signUp({'from':accounts[3], 'value':'0.1 ether'})
+Transaction sent: 0x161eee764ab3483c29da4d293a68e021f0ee0f63fdc25786543637829a0f82a1
+  Gas price: 1.00000001 gwei   Gas limit: 142045   Nonce: 0
+  WordleRinkeby.signUp confirmed   Block: 10520397   Gas used: 129132 (90.91%)
+
+<Transaction '0x161eee764ab3483c29da4d293a68e021f0ee0f63fdc25786543637829a0f82a1'>
+>>> wordleRinkeby.getAssignedWord(accounts[1])
+'OCCUR'
+>>> wordleRinkeby.getAssignedWord(accounts[2])
+'PRIDE'
+>>> wordleRinkeby.getAssignedWord(accounts[3])
+'LEAVE'
+>>> wordleRinkeby.balance()
+300000000000000000
+>>> [x.balance() for x in accounts]
+[506351814128182688, 1899833867998338680, 15998697205487670317, 1899870867998708680]
+>>> wordleRinkeby.makeGuess("COCRU", {'from':accounts[0]})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted: Error: PLAYER NOT SIGNED UP'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually.
+>>> wordleRinkeby.makeGuess("COCRU", {'from':accounts[1]})
+Transaction sent: 0xdaf08697956cab94c6fd3a6d01818afc9aa5ab70c58eef50ff3016c6505c85df
+  Gas price: 1.00000001 gwei   Gas limit: 137512   Nonce: 1
+  WordleRinkeby.makeGuess confirmed   Block: 10520422   Gas used: 125011 (90.91%)
+
+<Transaction '0xdaf08697956cab94c6fd3a6d01818afc9aa5ab70c58eef50ff3016c6505c85df'>
+>>> x = wordleRinkeby.makeGuess("COCRU", {'from':accounts[1]})
+Transaction sent: 0x19387a1e7cc5205f0067dac7778fc1a1bf7d499f19bf943069dda04d1d3c8708
+  Gas price: 1.000000011 gwei   Gas limit: 118702   Nonce: 2
+  WordleRinkeby.makeGuess confirmed   Block: 10520427   Gas used: 107911 (90.91%)
+
+>>> x.return_value
+  File "<console>", line 1, in <module>
+  File "brownie/network/transaction.py", line 54, in wrapper
+    raise RPCRequestError(
+RPCRequestError: Accessing `TransactionReceipt.return_value` on a confirmed transaction requires the `debug_traceTransaction` RPC endpoint, but the node client does not support it or has not 
+made it available.
+>>> x.return_value()
+  File "<console>", line 1, in <module>
+TypeError: 'NoneType' object is not callable
+>>> x.call_trace
+<bound method TransactionReceipt.call_trace of <Transaction '0x19387a1e7cc5205f0067dac7778fc1a1bf7d499f19bf943069dda04d1d3c8708'>>
+>>> x.call_trace()
+  File "<console>", line 1, in <module>
+  File "brownie/network/transaction.py", line 71, in wrapper
+    return fn(self, *args, **kwargs)
+  File "brownie/network/transaction.py", line 1117, in call_trace
+    trace[0], trace[-1], 0, len(trace), self._get_trace_gas(0, len(self.trace))
+IndexError: list index out of range
+>>> x.info
+<bound method TransactionReceipt.info of <Transaction '0x19387a1e7cc5205f0067dac7778fc1a1bf7d499f19bf943069dda04d1d3c8708'>>
+>>> x.info()\
+...
+
+KeyboardInterrupt
+>>> x.info()
+Transaction was Mined
+---------------------
+Tx Hash: 0x19387a1e7cc5205f0067dac7778fc1a1bf7d499f19bf943069dda04d1d3c8708
+From: 0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC
+To: 0xDa1E8288DE108f5Db74b7553e85742e5f5aAC762
+Value: 0
+Function: WordleRinkeby.makeGuess
+Block: 10520427
+Gas Used: 107911 / 118702 (90.9%)
+
+>>> x.trace
+[]
+>>> x = wordleRinkeby.makeGuess.call("COCRU", {'from':accounts[1]})
+>>> x
+(1, 1, 0, 1, 1)
+>>> x = wordleRinkeby.makeGuess.call("OCCUR", {'from':accounts[1]})
+>>> x
+(0, 0, 0, 0, 0)
+>>> x = wordleRinkeby.makeGuess.call("OCCUR", {'from':accounts[1]})
+>>> c
+  File "<console>", line 1, in <module>
+NameError: name 'c' is not defined
+>>> x
+(0, 0, 0, 0, 0)
+>>> x = wordleRinkeby.makeGuess("OCCUR", {'from':accounts[1]})
+Transaction sent: 0x3c94950d8b61653ed0ab41daa6189e7031195d49344a32d8ca663ccdd130fd78
+  Gas price: 1.000000009 gwei   Gas limit: 142497   Nonce: 3
+  WordleRinkeby.makeGuess confirmed   Block: 10520447   Gas used: 129543 (90.91%)
+
+>>> x
+<Transaction '0x3c94950d8b61653ed0ab41daa6189e7031195d49344a32d8ca663ccdd130fd78'>
+>>> x.value
+0
+>>> x.return_value
+  File "<console>", line 1, in <module>
+  File "brownie/network/transaction.py", line 54, in wrapper
+    raise RPCRequestError(
+RPCRequestError: Accessing `TransactionReceipt.return_value` on a confirmed transaction requires the `debug_traceTransaction` RPC endpoint, but the node client does not support it or has not 
+made it available.
+>>> x = wordleRinkeby.makeGuess("OCCUR", {'from':accounts[1]})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted: Error: PLAYER ALREADY GUESSED THE CORRECT WORD'. This transaction will likely revert. If you wish to broadcast, you must set the gas 
+limit manually.
+>>> x = wordleRinkeby.makeGuess("XXXXX", {'from':accounts[2]})
+Transaction sent: 0x59d6927ff3d1f5b425888ffc73c0feb8eb7a64e517fc38e9699a61cbdf30246d
+  Gas price: 1.00000001 gwei   Gas limit: 135168   Nonce: 52
+  WordleRinkeby.makeGuess confirmed   Block: 10520453   Gas used: 122880 (90.91%)
+
+>>> x = wordleRinkeby.makeGuess("XXXXX", {'from':accounts[2]})
+Transaction sent: 0x0678d8247257add4e6a9ba7d030ccd21284afca138a6e1337d0cf83a9e079be3
+  Gas price: 1.000000009 gwei   Gas limit: 116358   Nonce: 53
+  WordleRinkeby.makeGuess confirmed   Block: 10520562   Gas used: 105780 (90.91%)
+
+>>> x = wordleRinkeby.makeGuess("XXXXX", {'from':accounts[2]})
+Transaction sent: 0x5f654dead648840e47d4e0cdb8b8e192d1eb4d207c50e161369d74564bb194a1
+  Gas price: 1.000000009 gwei   Gas limit: 116358   Nonce: 54
+  WordleRinkeby.makeGuess confirmed   Block: 10520563   Gas used: 105780 (90.91%)
+
+>>> x = wordleRinkeby.makeGuess("PRIDE", {'from':accounts[2]})
+Transaction sent: 0x576b8eb6b0590dbef094cd2c9e3f8875b491edfcd2f87a8100a18fe0a7338ee1
+  Gas price: 1.000000009 gwei   Gas limit: 142497   Nonce: 55
+  WordleRinkeby.makeGuess confirmed   Block: 10520565   Gas used: 129543 (90.91%)
+
+>>> x = wordleRinkeby.makeGuess("LEAVE", {'from':accounts[2]})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted: Error: PLAYER ALREADY GUESSED THE CORRECT WORD'. This transaction will likely revert. If you wish to broadcast, you must set the gas 
+limit manually.
+>>> wordleRinkeby.call.payoutAndReset()
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 765, in __getattribute__
+    raise AttributeError(f"Contract '{self._name}' object has no attribute '{name}'")
+AttributeError: Contract 'WordleRinkeby' object has no attribute 'call'
+>>> wordleRinkeby.payoutAndReset.call()
+'0xc4e52d29c5993f354dcBCe3D11723a551A79AF55'
+>>> wordleRinkeby.payoutAndReset.call()
+'0xc4e52d29c5993f354dcBCe3D11723a551A79AF55'
+>>> wordleRinkeby.payoutAndReset.call()
+'0xc4e52d29c5993f354dcBCe3D11723a551A79AF55'
+>>> wordleRinkeby.payoutAndReset()
+^C  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 744, in _make_transaction
+    response = self._transact(tx, allow_revert)  # type: ignore
+  File "brownie/network/account.py", line 959, in _transact
+    self._check_for_revert(tx)
+  File "brownie/network/account.py", line 465, in _check_for_revert
+    web3.eth.call({k: v for k, v in tx.items() if k not in skip_keys and v})
+  File "web3/module.py", line 57, in caller
+    result = w3.manager.request_blocking(method_str,
+  File "web3/manager.py", line 197, in request_blocking
+    response = self._make_request(method, params)
+  File "web3/manager.py", line 150, in _make_request
+    return request_func(method, params)
+  File "cytoolz/functoolz.pyx", line 250, in cytoolz.functoolz.curry.__call__
+  File "web3/middleware/formatting.py", line 76, in apply_formatters
+    response = make_request(method, params)
+  File "web3/middleware/gas_price_strategy.py", line 90, in middleware
+    return make_request(method, params)
+  File "cytoolz/functoolz.pyx", line 250, in cytoolz.functoolz.curry.__call__
+  File "web3/middleware/formatting.py", line 74, in apply_formatters
+    response = make_request(method, formatted_params)
+  File "web3/middleware/attrdict.py", line 33, in middleware
+    response = make_request(method, params)
+  File "cytoolz/functoolz.pyx", line 250, in cytoolz.functoolz.curry.__call__
+  File "web3/middleware/formatting.py", line 74, in apply_formatters
+    response = make_request(method, formatted_params)
+  File "cytoolz/functoolz.pyx", line 250, in cytoolz.functoolz.curry.__call__
+  File "web3/middleware/formatting.py", line 74, in apply_formatters
+    response = make_request(method, formatted_params)
+  File "cytoolz/functoolz.pyx", line 250, in cytoolz.functoolz.curry.__call__
+  File "web3/middleware/formatting.py", line 74, in apply_formatters
+    response = make_request(method, formatted_params)
+  File "web3/middleware/buffered_gas_estimate.py", line 40, in middleware
+    return make_request(method, params)
+  File "brownie/network/middlewares/catch_tx_revert.py", line 24, in process_request
+    result = make_request(method, params)
+  File "brownie/network/middlewares/geth_poa.py", line 21, in process_request
+    return middleware_fn(method, params)
+  File "cytoolz/functoolz.pyx", line 250, in cytoolz.functoolz.curry.__call__
+  File "web3/middleware/formatting.py", line 76, in apply_formatters
+    response = make_request(method, params)
+  File "web3/middleware/exception_retry_request.py", line 105, in middleware
+    return make_request(method, params)
+  File "web3/providers/rpc.py", line 88, in make_request
+    raw_response = make_post_request(
+  File "web3/_utils/request.py", line 48, in make_post_request
+    response = session.post(endpoint_uri, data=data, *args, **kwargs)  # type: ignore
+  File "requests/sessions.py", line 577, in post
+    return self.request('POST', url, data=data, json=json, **kwargs)
+  File "requests/sessions.py", line 529, in request
+    resp = self.send(prep, **send_kwargs)
+  File "requests/sessions.py", line 645, in send
+    r = adapter.send(request, **kwargs)
+  File "requests/adapters.py", line 440, in send
+    resp = conn.urlopen(
+  File "urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/local/Cellar/python@3.9/3.9.12/Frameworks/Python.framework/Versions/3.9/lib/python3.9/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/usr/local/Cellar/python@3.9/3.9.12/Frameworks/Python.framework/Versions/3.9/lib/python3.9/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/usr/local/Cellar/python@3.9/3.9.12/Frameworks/Python.framework/Versions/3.9/lib/python3.9/http/client.py", line 281, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/local/Cellar/python@3.9/3.9.12/Frameworks/Python.framework/Versions/3.9/lib/python3.9/socket.py", line 704, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/local/Cellar/python@3.9/3.9.12/Frameworks/Python.framework/Versions/3.9/lib/python3.9/ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/local/Cellar/python@3.9/3.9.12/Frameworks/Python.framework/Versions/3.9/lib/python3.9/ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+KeyboardInterrupt:
+>>> x = wordleRinkeby.payoutAndReset()
+Transaction sent: 0x9039001943e5ef72ac041aae5578c309b2193c055885803e28788c146ec40d4f
+  Gas price: 1.000000011 gwei   Gas limit: 1134750   Nonce: 12
+  WordleRinkeby.payoutAndReset confirmed   Block: 10520571   Gas used: 940391 (82.87%)
+
+>>> x.return_value
+  File "<console>", line 1, in <module>
+  File "brownie/network/transaction.py", line 54, in wrapper
+    raise RPCRequestError(
+RPCRequestError: Accessing `TransactionReceipt.return_value` on a confirmed transaction requires the `debug_traceTransaction` RPC endpoint, but the node client does not support it or has not 
+made it available.
+>>> x.return_value()
+  File "<console>", line 1, in <module>
+TypeError: 'NoneType' object is not callable
+>>> PaymentSplitter
+  File "<console>", line 1, in <module>
+NameError: name 'PaymentSplitter' is not defined
+>>> Contract.from_explorer
+<bound method Contract.from_explorer of <class 'brownie.network.contract.Contract'>>
+>>> Contract.from_explorer("0xc4e52d29c5993f354dcBCe3D11723a551A79AF55")
+/Users/abhinav.ramachandran/PycharmProjects/cryptle/venv/lib/python3.9/site-packages/brownie/network/contract.py:1907: BrownieEnvironmentWarning: No etherscan API token set. You may experience 
+issues with rate limiting. Visit https://etherscan.io/register to obtain a token, and then store it as the environment variable $ETHERSCAN_TOKEN
+  warnings.warn(
+Fetching source of 0xc4e52d29c5993f354dcBCe3D11723a551A79AF55 from api-rinkeby.etherscan.io...
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1052, in from_explorer
+    raise exc
+  File "brownie/network/contract.py", line 1049, in from_explorer
+    data_abi = _fetch_from_explorer(address, "getabi", True)
+  File "brownie/network/contract.py", line 1924, in _fetch_from_explorer
+    raise ValueError(f"Failed to retrieve data from API: {data}")
+ValueError: Failed to retrieve data from API: {'status': '0', 'message': 'NOTOK', 'result': 'Max rate limit reached, please use API Key for higher rate limit'}
+>>> Contract.from_abi
+<bound method Contract.from_abi of <class 'brownie.network.contract.Contract'>>
+>>>     with open(
+            "client/src/artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json",
+            'r') as f:
+        abi = json.load(f)['abi']
+
+  File "<console>", line 1,
+    with open(
+   ^
+SyntaxError: unexpected indent
+>>> with open("client/src/artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json",'r') as f:
+
+...   abi = json.load(f)['abi']
+...
+  File "<console>", line 3, in <module>
+NameError: name 'json' is not defined
+>>> import json
+>>> with open("client/src/artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json",'r') as f:
+
+...   abi = json.load(f)['abi']
+...
+>>> abi
+[
+    {
+        'inputs': [
+            {
+                'internalType': "address[]",
+                'name': "payees",
+                'type': "address[]"
+            },
+            {
+                'internalType': "uint256[]",
+                'name': "shares_",
+                'type': "uint256[]"
+            }
+        ],
+        'stateMutability': "payable",
+        'type': "constructor"
+    },
+    {
+        'anonymous': False,
+        'inputs': [
+            {
+                'indexed': True,
+                'internalType': "contract IERC20",
+                'name': "token",
+                'type': "address"
+            },
+            {
+                'indexed': False,
+                'internalType': "address",
+                'name': "to",
+                'type': "address"
+            },
+            {
+                'indexed': False,
+                'internalType': "uint256",
+                'name': "amount",
+                'type': "uint256"
+            }
+        ],
+        'name': "ERC20PaymentReleased",
+        'type': "event"
+    },
+    {
+        'anonymous': False,
+        'inputs': [
+            {
+                'indexed': False,
+                'internalType': "address",
+                'name': "account",
+                'type': "address"
+            },
+            {
+                'indexed': False,
+                'internalType': "uint256",
+                'name': "shares",
+                'type': "uint256"
+            }
+        ],
+        'name': "PayeeAdded",
+        'type': "event"
+    },
+    {
+        'anonymous': False,
+        'inputs': [
+            {
+                'indexed': False,
+                'internalType': "address",
+                'name': "from",
+                'type': "address"
+            },
+            {
+                'indexed': False,
+                'internalType': "uint256",
+                'name': "amount",
+                'type': "uint256"
+            }
+        ],
+        'name': "PaymentReceived",
+        'type': "event"
+    },
+    {
+        'anonymous': False,
+        'inputs': [
+            {
+                'indexed': False,
+                'internalType': "address",
+                'name': "to",
+                'type': "address"
+            },
+            {
+                'indexed': False,
+                'internalType': "uint256",
+                'name': "amount",
+                'type': "uint256"
+            }
+        ],
+        'name': "PaymentReleased",
+        'type': "event"
+    },
+    {
+        'inputs': [
+            {
+                'internalType': "uint256",
+                'name': "index",
+                'type': "uint256"
+            }
+        ],
+        'name': "payee",
+        'outputs': [
+            {
+                'internalType': "address",
+                'name': "",
+                'type': "address"
+            }
+        ],
+        'stateMutability': "view",
+        'type': "function"
+    },
+    {
+        'inputs': [
+            {
+                'internalType': "address payable",
+                'name': "account",
+                'type': "address"
+            }
+        ],
+        'name': "release",
+        'outputs': [],
+        'stateMutability': "nonpayable",
+        'type': "function"
+    },
+    {
+        'inputs': [
+            {
+                'internalType': "contract IERC20",
+                'name': "token",
+                'type': "address"
+            },
+            {
+                'internalType': "address",
+                'name': "account",
+                'type': "address"
+            }
+        ],
+        'name': "release",
+        'outputs': [],
+        'stateMutability': "nonpayable",
+        'type': "function"
+    },
+    {
+        'inputs': [
+            {
+                'internalType': "contract IERC20",
+                'name': "token",
+                'type': "address"
+            },
+            {
+                'internalType': "address",
+                'name': "account",
+                'type': "address"
+            }
+        ],
+        'name': "released",
+        'outputs': [
+            {
+                'internalType': "uint256",
+                'name': "",
+                'type': "uint256"
+            }
+        ],
+        'stateMutability': "view",
+        'type': "function"
+    },
+    {
+        'inputs': [
+            {
+                'internalType': "address",
+                'name': "account",
+                'type': "address"
+            }
+        ],
+        'name': "released",
+        'outputs': [
+            {
+                'internalType': "uint256",
+                'name': "",
+                'type': "uint256"
+            }
+        ],
+        'stateMutability': "view",
+        'type': "function"
+    },
+    {
+        'inputs': [
+            {
+                'internalType': "address",
+                'name': "account",
+                'type': "address"
+            }
+        ],
+        'name': "shares",
+        'outputs': [
+            {
+                'internalType': "uint256",
+                'name': "",
+                'type': "uint256"
+            }
+        ],
+        'stateMutability': "view",
+        'type': "function"
+    },
+    {
+        'inputs': [
+            {
+                'internalType': "contract IERC20",
+                'name': "token",
+                'type': "address"
+            }
+        ],
+        'name': "totalReleased",
+        'outputs': [
+            {
+                'internalType': "uint256",
+                'name': "",
+                'type': "uint256"
+            }
+        ],
+        'stateMutability': "view",
+        'type': "function"
+    },
+    {
+        'inputs': [],
+        'name': "totalReleased",
+        'outputs': [
+            {
+                'internalType': "uint256",
+                'name': "",
+                'type': "uint256"
+            }
+        ],
+        'stateMutability': "view",
+        'type': "function"
+    },
+    {
+        'inputs': [],
+        'name': "totalShares",
+        'outputs': [
+            {
+                'internalType': "uint256",
+                'name': "",
+                'type': "uint256"
+            }
+        ],
+        'stateMutability': "view",
+        'type': "function"
+    },
+    {
+        'stateMutability': "payable",
+        'type': "receive"
+    }
+]
+>>> paymentSplitter = Contract.from_abi("myPaymentSplitter", '0xc4e52d29c5993f354dcBCe3D11723a551A79AF55', abi)
+>>> paymentSplitter
+<myPaymentSplitter Contract '0xc4e52d29c5993f354dcBCe3D11723a551A79AF55'>
+>>> paymentSplitter.balance()
+297000000000000000
+>>> paymentSplitter.payee(0)
+'0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC'
+>>> paymentSplitter.payee(1)
+'0xf322487D9b30aCaC92c911126cc538818e3BCA28'
+>>> paymentSplitter.payee(2)
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1751, in __call__
+    return self.call(*args, block_identifier=block_identifier, override=override)
+  File "brownie/network/contract.py", line 1542, in call
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 106, in __init__
+    raise ValueError(f"{self.message}: {err_msg}") from None
+ValueError: execution reverted: 0x4e487b710000000000000000000000000000000000000000000000000000000000000032
+>>> paymentSplitter.shares("0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC")
+2000
+>>> paymentSplitter.shares("0xf322487D9b30aCaC92c911126cc538818e3BCA28")
+1000
+>>> paymentSplitter.released("0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC")
+0
+>>> paymentSplitter.release("0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC")
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1338, in __call__
+    return fn(*args, **kwargs)  # type: ignore
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1578, in transact
+    raise AttributeError(
+AttributeError: Final argument must be a dict of transaction parameters that includes a `from` field specifying the sender of the transaction
+>>> paymentSplitter.release("0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC", {'from':addresses[1]})
+  File "<console>", line 1, in <module>
+NameError: name 'addresses' is not defined
+>>> paymentSplitter.release("0x06545B0B201dA86555d62Eed7Cd386A0CAC1FAbC", {'from':accounts[1]})
+Transaction sent: 0x365f16a80d8abaeaaffeaaec6886c33e75f42462c98b105a49cfa6aabbbc9cc8
+  Gas price: 1.000000009 gwei   Gas limit: 88685   Nonce: 4
+  myPaymentSplitter.release confirmed   Block: 10520594   Gas used: 79777 (89.96%)
+
+<Transaction '0x365f16a80d8abaeaaffeaaec6886c33e75f42462c98b105a49cfa6aabbbc9cc8'>
+>>> paymentSplitter.release("0xf322487D9b30aCaC92c911126cc538818e3BCA28", {'from':accounts[2]})
+Transaction sent: 0xc07ae6795b3dbf5ac624bdadee9b0f6095345b686b8e1535635e193bbf2863b7
+  Gas price: 1.000000009 gwei   Gas limit: 69875   Nonce: 56
+  myPaymentSplitter.release confirmed   Block: 10520603   Gas used: 62677 (89.70%)
+
+<Transaction '0xc07ae6795b3dbf5ac624bdadee9b0f6095345b686b8e1535635e193bbf2863b7'>
+>>> wordleRinkeby.s_randomWords()
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1751, in __call__
+    return self.call(*args, block_identifier=block_identifier, override=override)
+  File "brownie/network/contract.py", line 1537, in call
+    tx.update({"to": self._address, "data": self.encode_input(*args)})
+  File "brownie/network/contract.py", line 1628, in encode_input
+    data = format_input(self.abi, args)
+  File "brownie/convert/normalize.py", line 20, in format_input
+    raise type(e)(f"{abi['name']} {e}") from None
+ValueError: s_randomWords Sequence has incorrect length, expected 1 but got 0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.currGameState()
+0
+>>> wordleRinkeby.initGame({'from':accounts[0]})
+Transaction sent: 0xa917eb4ed9c2af1e50847069e00101aeee3fce6c7510f5c8c019a2587449ccdc
+  Gas price: 1.000000011 gwei   Gas limit: 88368   Nonce: 13
+  WordleRinkeby.initGame confirmed   Block: 10520617   Gas used: 80335 (90.91%)
+
+<Transaction '0xa917eb4ed9c2af1e50847069e00101aeee3fce6c7510f5c8c019a2587449ccdc'>
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(1)
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1751, in __call__
+    return self.call(*args, block_identifier=block_identifier, override=override)
+  File "brownie/network/contract.py", line 1542, in call
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 96, in __init__
+    raise ValueError(exc["message"]) from None
+ValueError: execution reverted
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.signUp({'from':accounts[1], 'value':'0.1 ether'})
+  File "<console>", line 1, in <module>
+  File "brownie/network/contract.py", line 1710, in __call__
+    return self.transact(*args)
+  File "brownie/network/contract.py", line 1583, in transact
+    return tx["from"].transfer(
+  File "brownie/network/account.py", line 644, in transfer
+    receipt, exc = self._make_transaction(
+  File "brownie/network/account.py", line 727, in _make_transaction
+    raise VirtualMachineError(e) from None
+  File "brownie/exceptions.py", line 93, in __init__
+    raise ValueError(str(exc)) from None
+ValueError: Gas estimation failed: 'execution reverted: Error: RANDOM NUMBER NOT RECEIVED YET'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit 
+manually.
+>>> wordleRinkeby.s_randomWords(0)
+0
+>>> wordleRinkeby.s_randomWords(0)
+64488318467876685904240884504449714818100225740096436586846190148701063445043
+>>> accounts[0].estimate_gas
+
