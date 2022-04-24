@@ -106,6 +106,15 @@ contract Wordle is Ownable{
         return pastGamePaymentSplitters.length;
     }
 
+    function getWordListForUserLength(address a) onlyOwner public view returns(uint){
+        return currWordListForUser[a].length;
+    }
+
+    function getWordListForUser(address a, uint b) onlyOwner public view returns(string memory){
+        return currWordListForUser[a][b];
+    }
+
+
     function initGame() onlyOwner public {
         require(currGameState == GameState.PENDING, "Error: EXPECTED GameState.PENDING");
         currGameState = GameState.IN_PROGRESS;
@@ -189,13 +198,15 @@ contract Wordle is Ownable{
     }
 
     function getGuessResult() public returns (WordleResult[5] memory) {
+        require(currGameState == GameState.IN_PROGRESS, "Error: EXPECTED GameState.IN_PROGRESS");
+        require(enabled[msg.sender], "Error: PLAYER NOT SIGNED UP");
         require(guessState[msg.sender] == UserGuessState.PROCESSING_GUESS, "Error: EXPECTED UserGuessState.PROCESSING_GUESS");
         guessState[msg.sender] = UserGuessState.AWAITING_GUESS;
 
         WordleResult[5] memory result;
 
         string memory guessedWordString = userGuesses[msg.sender][numberOfGuesses[msg.sender]];
-        uint randomNumber = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, guessedWordString)));
+        uint randomNumber = uint(keccak256(abi.encodePacked(msg.sender)));
         string memory targetWord = currWordListForUser[msg.sender][randomNumber%currWordListForUser[msg.sender].length];
 
         result = getWordleComparison(targetWord, guessedWordString);
@@ -210,14 +221,14 @@ contract Wordle is Ownable{
             uint numberOfNewWords = 0;
             // create an array, and then trim it
             for(uint i=0;i<currWordListForUser[msg.sender].length;i++){
-                if(isSameWordleResult(getWordleComparison(targetWord, currWordListForUser[msg.sender][i]),result)){
+                if(isSameWordleResult(getWordleComparison(currWordListForUser[msg.sender][i], guessedWordString),result)){
                     newWordsListTemp[numberOfNewWords] = currWordListForUser[msg.sender][i];
                     numberOfNewWords++;
                 }
             }
 
             string[] memory newWordsList = new string[](numberOfNewWords);
-            for(uint i=0;i<newWordsList.length;i++){
+            for(uint i=0;i<numberOfNewWords;i++){
                 newWordsList[i]=newWordsListTemp[i];
             }
 
