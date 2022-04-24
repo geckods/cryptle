@@ -4,8 +4,15 @@ import pytest
 import brownie
 from brownie import *
 
-
 lotSize = 1e16
+
+@pytest.fixture(autouse=True)
+def setup(fn_isolation):
+    """
+    Isolation setup fixture.
+    This ensures that each test runs against the same base environment.
+    """
+    pass
 
 @pytest.fixture(scope="module")
 def word_list(accounts, WordList):
@@ -13,11 +20,11 @@ def word_list(accounts, WordList):
 
 
 @pytest.fixture(scope="module")
-def wordle_pre_init_test_mode(accounts, Wordle, word_list):
+def wordle_pre_init_test_mode(accounts, WordleOld, word_list):
     """
     Yield a 'Contract' object for the Wordle contract.
     """
-    return accounts[0].deploy(Wordle, word_list.address, lotSize, True, 2819)
+    return accounts[0].deploy(WordleOld, word_list.address, lotSize, True)
 
 
 @pytest.fixture(scope="module")
@@ -59,6 +66,7 @@ def test_init_worked(wordle_pre_init_test_mode):
 
 
 def test_pending_mode(wordle_pre_init_test_mode):
+    print(wordle_pre_init_test_mode.currGameState())
     with brownie.reverts("Error: EXPECTED GameState.IN_PROGRESS"):
         wordle_pre_init_test_mode.signUp({'from': accounts[1], 'amount': '2 ether'})
 
@@ -76,7 +84,7 @@ def test_cannot_init_twice(wordle_basic_deploy_test_mode):
 
 def test_sign_up_insufficient(wordle_basic_deploy_test_mode):
     with brownie.reverts("Error: INSUFFICIENT FUNDS PROVIDED"):
-        wordle_basic_deploy_test_mode.signUp({'from': accounts[1], 'amount': lotSize/2})
+        wordle_basic_deploy_test_mode.signUp({'from': accounts[1], 'amount': lotSize / 2})
 
 
 def test_sign_up_sufficient(wordle_basic_deploy_test_mode):

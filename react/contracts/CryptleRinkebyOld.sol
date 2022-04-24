@@ -16,7 +16,7 @@ pragma solidity >=0.8.0 <0.9.0;
  * @title Wordle
  * @dev Play the game wordle
  */
-contract WordleRinkeby is Ownable, VRFConsumerBaseV2{
+contract WordleRinkebyOld is Ownable, VRFConsumerBaseV2{
 
 
 //VRF RELATED OBJECTS

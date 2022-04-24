@@ -2,8 +2,6 @@
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 interface WordList {
    function getWordListLength() external view returns(uint);
@@ -13,21 +11,17 @@ interface WordList {
 pragma solidity >=0.8.0 <0.9.0;
 
 /**
- * @title Wordle
+ * @title WordleOld
  * @dev Play the game wordle
  */
-contract Wordle is Ownable{
+contract WordleOld is Ownable{
 
     // user level objects
     mapping(address => uint) public numberOfGuesses;
     mapping(address => bool) public solved;
     mapping(address => WordleResult[5][6]) public guessStore; //multidimentional array notation is reversed for whatever reason
-    mapping(address => string[6]) public userGuesses;
     mapping(address => bool) public enabled;
-
-    mapping(address => string[]) private currWordListForUser;
-    mapping(address => UserGuessState) private guessState;
-
+    mapping(address => string) private wordAssignment;
     address[] public playersList;
 
     string[] public wordList;
@@ -38,8 +32,8 @@ contract Wordle is Ownable{
     address[] public pastGamePaymentSplitters;
 
     // configuration constants
-    uint[7] private payouts = [0,10000,5000,2000,1000,500,100]; //payouts as a by-thousand fraction of the 4-guess payout, so 1000 is par
-    uint private ownersCut = 10; //author's cut as a by-thousand fraction
+    uint[7] payouts = [0,10000,5000,2000,1000,500,100]; //payouts as a by-thousand fraction of the 4-guess payout, so 1000 is par
+    uint authorsCut = 10; //author's cut as a by-thousand fraction
 
     enum WordleResult{ GREEN, YELLOW, GREY } //enum represents the outcome of a wordle guess at a single character level
 
@@ -47,16 +41,14 @@ contract Wordle is Ownable{
     // when the owner calls payoutAndReset, then it goes back to PENDING
     enum GameState{PENDING, IN_PROGRESS}
 
-    //
-    enum UserGuessState{AWAITING_GUESS, PROCESSING_GUESS}
-
     GameState public currGameState;
+    bool public testingMode;
 
     WordList wl;
 
     uint public lotSizeInWei;
 
-    constructor(address wordListContractAddress, uint lotSizeInWeiParam){
+    constructor(address wordListContractAddress, uint lotSizeInWeiParam, bool isTesting){
 
         wl = WordList(wordListContractAddress);
 
@@ -69,6 +61,7 @@ contract Wordle is Ownable{
         currGameState = GameState.PENDING;
         vrfRandomNumber = 0;
 
+        testingMode = isTesting;
     }
 
     string masterWordForTesting = "AUDIO";
@@ -79,19 +72,21 @@ contract Wordle is Ownable{
         require(msg.value >= lotSizeInWei, "Error: INSUFFICIENT FUNDS PROVIDED");
         require(!enabled[msg.sender], "Error: PLAYER ALREADY SIGNED UP");
 
+        if(testingMode){
+            wordAssignment[msg.sender] = masterWordForTesting;
+        } else {
+            uint randomNumberForUser = uint(keccak256(abi.encode(vrfRandomNumber, playersList.length)));
+            wordAssignment[msg.sender] = wordList[randomNumberForUser%wl.getWordListLength()];
+        }
+
         resetSingleUser(msg.sender);
         playersList.push(msg.sender);
-
         enabled[msg.sender]=true;
-        currWordListForUser[msg.sender] = wordList;
     }
 
-    function setOwnerCut(uint newCut) onlyOwner public {
-        ownersCut = newCut;
-    }
-
-    function getOwnerCut() onlyOwner public view returns (uint){
-        return ownersCut;
+    function getAssignedWord(address user) onlyOwner public view returns (string memory){
+        // FOR DEBUGGING PURPOSES, remove in actual deployment
+        return wordAssignment[user];
     }
 
     function getSolvedCountsByGuessNumber(uint guessNumber) onlyOwner public view returns (uint solvedCount){
@@ -108,6 +103,11 @@ contract Wordle is Ownable{
 
     function initGame() onlyOwner public {
         require(currGameState == GameState.PENDING, "Error: EXPECTED GameState.PENDING");
+
+        if(!testingMode){
+            vrfRandomNumber = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp)));
+        }
+
         currGameState = GameState.IN_PROGRESS;
     }
 
@@ -115,8 +115,8 @@ contract Wordle is Ownable{
         require(currGameState == GameState.IN_PROGRESS, "Error: EXPECTED GameState.IN_PROGRESS");
 
         // first, payout to the owner
-        payable(owner()).transfer((address(this).balance* ownersCut)/1000);
-
+        payable(owner()).transfer((address(this).balance* authorsCut)/1000);
+        
         // then, distribute the rest of the eth to players
         // create shares
         uint eligiblePlayersCount = 0;
@@ -166,73 +166,28 @@ contract Wordle is Ownable{
         enabled[userAddress] = false;
         numberOfGuesses[userAddress] = 0;
         solved[userAddress] = false;
-        guessState[userAddress] = UserGuessState.AWAITING_GUESS;
         delete guessStore[userAddress];
-        delete currWordListForUser[userAddress];
     }
 
-    function makeGuess(string calldata guessedWordString) public{
+    function makeGuess(string calldata guessedWordString) public returns (WordleResult[5] memory) {
         require(currGameState == GameState.IN_PROGRESS, "Error: EXPECTED GameState.IN_PROGRESS");
         require(enabled[msg.sender], "Error: PLAYER NOT SIGNED UP");
         require(numberOfGuesses[msg.sender] < 6, "Error: NUMBER OF GUESSES EXHAUSTED");
         require(!solved[msg.sender], "Error: PLAYER ALREADY GUESSED THE CORRECT WORD");
         require(isValidWord(guessedWordString), "Error: INVALID INPUT WORD");
-        require(guessState[msg.sender] == UserGuessState.AWAITING_GUESS, "Error: EXPECTED UserGuessState.AWAITING_GUESS");
-
-        // record the guess, change the player state, and begin fetching the random number
-        userGuesses[msg.sender][numberOfGuesses[msg.sender]] = guessedWordString;
-        guessState[msg.sender] = UserGuessState.PROCESSING_GUESS;
-
-        if(currWordListForUser[msg.sender].length > 1){
-            // initiate the process of getting a random number here,
-        }
-    }
-
-    function getGuessResult() public returns (WordleResult[5] memory) {
-        require(guessState[msg.sender] == UserGuessState.PROCESSING_GUESS, "Error: EXPECTED UserGuessState.PROCESSING_GUESS");
-        guessState[msg.sender] = UserGuessState.AWAITING_GUESS;
 
         WordleResult[5] memory result;
 
-        string memory guessedWordString = userGuesses[msg.sender][numberOfGuesses[msg.sender]];
-        uint randomNumber = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, guessedWordString)));
-        string memory targetWord = currWordListForUser[msg.sender][randomNumber%currWordListForUser[msg.sender].length];
-
-        result = getWordleComparison(targetWord, guessedWordString);
+        result = getWordleComparison(wordAssignment[msg.sender], guessedWordString);
         guessStore[msg.sender][numberOfGuesses[msg.sender]] = result;
         numberOfGuesses[msg.sender]++;
-
+        
         if(isAllGreen(result)){
             solved[msg.sender] = true;
             solvedCountByGuesses[numberOfGuesses[msg.sender]]++;
-        } else {
-            string[] memory newWordsListTemp = new string[](currWordListForUser[msg.sender].length);
-            uint numberOfNewWords = 0;
-            // create an array, and then trim it
-            for(uint i=0;i<currWordListForUser[msg.sender].length;i++){
-                if(isSameWordleResult(getWordleComparison(targetWord, currWordListForUser[msg.sender][i]),result)){
-                    newWordsListTemp[numberOfNewWords] = currWordListForUser[msg.sender][i];
-                    numberOfNewWords++;
-                }
-            }
-
-            string[] memory newWordsList = new string[](numberOfNewWords);
-            for(uint i=0;i<newWordsList.length;i++){
-                newWordsList[i]=newWordsListTemp[i];
-            }
-
-            currWordListForUser[msg.sender] = newWordsList;
         }
 
         return result;
-
-    }
-
-    function isSameWordleResult(WordleResult[5] memory a, WordleResult[5] memory b) private returns (bool){
-        for(uint i=0;i<5;i++){
-            if(a[i]!=b[i])return false;
-        }
-        return true;
     }
 
     function isValidWord(string calldata guessedWordString) internal pure returns (bool){
@@ -246,7 +201,7 @@ contract Wordle is Ownable{
         }
         return true;
     }
-
+    
     function isAllGreen(WordleResult[5] memory guess) internal pure returns (bool) {
         return (guess[0]==WordleResult.GREEN && guess[1]==WordleResult.GREEN && guess[2]==WordleResult.GREEN && guess[3]==WordleResult.GREEN && guess[4]==WordleResult.GREEN);
     }
@@ -258,7 +213,7 @@ contract Wordle is Ownable{
         return uint8(char) - uint8(bytes1("A"));
     }
 
-    function getWordleComparison(string memory targetWordString, string memory guessedWordString) internal view returns (WordleResult[5] memory){
+    function getWordleComparison(string storage targetWordString, string calldata guessedWordString) internal view returns (WordleResult[5] memory){
 
         int[26] memory letterCounts;
         bytes memory targetWord = bytes(targetWordString);
@@ -266,7 +221,7 @@ contract Wordle is Ownable{
         for(uint i=0;i<26;i++){
             letterCounts[getIntegerIndex(bytes(allChars)[i])]=0;
         }
-
+        
         WordleResult[5] memory result = [WordleResult.GREY,WordleResult.GREY,WordleResult.GREY,WordleResult.GREY,WordleResult.GREY];
 
         for(uint i=0;i<5;i++){
