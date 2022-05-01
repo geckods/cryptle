@@ -1,6 +1,7 @@
 import '../App.css';
 import React, { useContext, useState } from 'react';
 import AppContext from '../contexts/AppContext';
+import WordleGrid from './WordleGrid';
 
 const SignUp = () => {
     const context = useContext(AppContext);
@@ -42,9 +43,17 @@ const Play = () => {
             console.log('Guessing');
             setGuessing(true);
             const wordle = context.getWordle();
-            wordle.methods.makeGuess(guess.toUpperCase()).send({from: context.getAccounts()[0]}).then((tx) => {
+            wordle.methods.makeGuess(guess.toUpperCase()).send({from: context.getActiveAccount()}).then((tx) => {
                 console.log(tx);
-                setGuessing(false);
+                wordle.methods.getGuessResult().call({from: context.getActiveAccount()}).then((tx1) => {
+                    console.log('GetResult o/p');
+                    console.log(tx1);
+                }).catch((e) => {
+                    console.log('error');
+                    console.log(e);
+                }).finally(() => {
+                    setGuessing(false);
+                });
             }).catch((e) => {
                 console.log('error');
                 console.log(e);
@@ -54,12 +63,17 @@ const Play = () => {
             alert('invalid guess');
         }
     };
+    
+    const getGuessResult = () => {
+        
+    }
 
     return (
         <div>
             {
             (!guessing) ?
             <div>
+                <WordleGrid />
                 <input 
                     id='guess-string' 
                     maxLength={5} 
@@ -69,6 +83,7 @@ const Play = () => {
                         setGuess(event.currentTarget.value);
                     }}
                 />
+                <br/>
                 <button onClick={() => makeGuess()}>Submit Guess</button>
             </div>:
             <div>Guessing ...</div>
@@ -86,6 +101,7 @@ function Main() {
       <header>
         Welcome {context.getAccounts().join('\n')}
       </header>
+      <br/>
       <div>
           {
               (enabled) ?

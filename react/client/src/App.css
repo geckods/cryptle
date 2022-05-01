@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+/* Custome Styles */
+td {
+  border-radius: 3px;
+  height: 30px;
+  width: 30px;
+  border: 1px solid gray;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+}

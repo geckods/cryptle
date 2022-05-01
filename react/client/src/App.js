@@ -22,6 +22,9 @@ const App = () =>{
         getAccounts: () => {
             return state.accounts
         },
+        getActiveAccount: () => {
+            return state.accounts[0]
+        },
         getChainId: () => {
             return state.chainid
         },
