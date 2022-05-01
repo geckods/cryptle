@@ -2,22 +2,14 @@ import '../App.css';
 import React, { useContext, useState } from 'react';
 import AppContext from '../contexts/AppContext';
 import WordleGrid from './WordleGrid';
+import { isValidGuess } from '../utils/WordleUtils';
 
 const SignUp = () => {
     const context = useContext(AppContext);
-
-    const signUp = () => {
-        const wordle = context.getWordle();
-        wordle.methods.signUp().send({value: 1000000000000000000, from: context.getAccounts()[0]}).then((tx) => {
-            console.log(tx);
-        }).catch((e) => {
-            console.log('error');
-            console.log(e);
-        });
-    };
+    const wordleInterface = context.getWordleInterface();
 
     return (
-        <button onClick={signUp}>
+        <button onClick={() => wordleInterface.signUp()}>
             Sign Up
         </button>
     )
@@ -25,35 +17,16 @@ const SignUp = () => {
 
 const Play = () => {
     const context = useContext(AppContext);
+    const wordleInterface = context.getWordleInterface();
+
     const [guessing, setGuessing] = useState(false);
     const [guess, setGuess] = useState('');
 
-    const isValidGuess = (guess) => {
-        if (guess.length !== 5) {
-            return false;
-        }
-        if(/^[a-zA-Z]+$/.test(guess)) {
-            return true;
-        }
-        return false;
-    };
-
     const makeGuess = () => {
         if (isValidGuess(guess)) {
-            console.log('Guessing');
             setGuessing(true);
-            const wordle = context.getWordle();
-            wordle.methods.makeGuess(guess.toUpperCase()).send({from: context.getActiveAccount()}).then((tx) => {
+            wordleInterface.makeGuess(guess).then((tx) => {
                 console.log(tx);
-                wordle.methods.getGuessResult().call({from: context.getActiveAccount()}).then((tx1) => {
-                    console.log('GetResult o/p');
-                    console.log(tx1);
-                }).catch((e) => {
-                    console.log('error');
-                    console.log(e);
-                }).finally(() => {
-                    setGuessing(false);
-                });
             }).catch((e) => {
                 console.log('error');
                 console.log(e);
@@ -64,10 +37,6 @@ const Play = () => {
         }
     };
     
-    const getGuessResult = () => {
-        
-    }
-
     return (
         <div>
             {
@@ -99,7 +68,7 @@ function Main() {
   return (
     <div className="App">
       <header>
-        Welcome {context.getAccounts().join('\n')}
+        Welcome {context.getActiveAccount()}
       </header>
       <br/>
       <div>

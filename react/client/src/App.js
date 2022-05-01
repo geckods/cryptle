@@ -5,6 +5,8 @@ import map from "./artifacts/deployments/map.json"
 import {getEthereum} from "./getEthereum"
 import Main from "./components/Main"
 import AppContext from "./contexts/AppContext"
+import WordleContractInterface from "./services/WordleContractInterface"
+import { accountsAvailable } from "./utils/Web3Utils"
 
 const App = () =>{
 
@@ -13,7 +15,8 @@ const App = () =>{
         accounts: null,
         chainid: null,
         wordle: null,
-        enabled: false
+        enabled: false,
+        wordleInterface: null
     };
 
     const [state, setState] = useState(initialAppState);
@@ -33,6 +36,9 @@ const App = () =>{
         },
         getWordle: () => {
             return state.wordle
+        },
+        getWordleInterface: () => {
+            return state.wordleInterface
         }
     };
 
@@ -44,28 +50,32 @@ const App = () =>{
         try {
             const ethereum = await getEthereum();
             ethereum.enable();
+
+            // Use web3 to get the user's accounts
+            const accounts = await web3.eth.getAccounts();
+
+            if (accountsAvailable(accounts)) {
+                // Get the current chain id
+                const chainid = parseInt(await web3.eth.getChainId());
+
+                const wordle = await loadContract("dev", "Wordle", web3);
+                const enabled = await wordle.methods.enabled(accounts[0]).call();
+
+                setState({
+                    accounts: accounts,
+                    web3: web3,
+                    chainid: chainid,
+                    wordle: wordle,
+                    enabled: (enabled) ?? false,
+                    wordleInterface: new WordleContractInterface(wordle, accounts[0])
+                });
+            }
         } catch (e) {
             console.log(`Could not enable accounts. Interaction with contracts not available.
             Use a modern browser with a Web3 plugin to fix this issue.`);
             console.log(e);
         }
 
-        // Use web3 to get the user's accounts
-        const accounts = await web3.eth.getAccounts();
-
-        // Get the current chain id
-        const chainid = parseInt(await web3.eth.getChainId());
-
-        const wordle = await loadContract("dev", "Wordle", web3);
-        const enabled = await wordle.methods.enabled(accounts[0]).call();
-
-        setState({
-            accounts: accounts,
-            web3: web3,
-            chainid: chainid,
-            wordle: wordle,
-            enabled: (enabled) ?? false
-        });
     }, []);
 
     const loadContract = async (chain, contractName, web3) => {
