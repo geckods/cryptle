@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import AppContext from '../contexts/AppContext';
 import WordleGrid from './WordleGrid';
 import { isValidGuess } from '../utils/WordleUtils';
+import { getValues, save } from '../utils/StorageUtils';
 
 const SignUp = () => {
     const context = useContext(AppContext);
@@ -22,11 +23,14 @@ const Play = () => {
     const [guessing, setGuessing] = useState(false);
     const [guess, setGuess] = useState('');
 
+    const player = JSON.parse(localStorage.getItem(context.getActiveAccount()));
+
     const makeGuess = () => {
         if (isValidGuess(guess)) {
             setGuessing(true);
             wordleInterface.makeGuess(guess).then((tx) => {
                 console.log(tx);
+                save(guess, tx, context.getActiveAccount());
             }).catch((e) => {
                 console.log('error');
                 console.log(e);
@@ -42,7 +46,7 @@ const Play = () => {
             {
             (!guessing) ?
             <div>
-                <WordleGrid />
+                <WordleGrid guesses={player.guesses} results={player.results} />
                 <input 
                     id='guess-string' 
                     maxLength={5} 

@@ -17,15 +17,20 @@ export class WordleContractInterface {
         const tx = await this.wordleContract.methods.makeGuess(guess.toUpperCase()).send({from: this.account});
         console.log('Make Guess Txn');
         console.log(tx);
+        const tx1 = await this.getGuessResult();
+
+        return tx1;
+    };
+
+    getGuessResult = async () => {
         const tx1 = await this.wordleContract.methods.getGuessResult().call({from: this.account});
         console.log('Get Result Dry Run');
         console.log(tx1);
 
-        const tx2 = await this.wordleContract.methods.getGuessResult().send({from: this.account});
-        console.log('Get Result Actual');
-        console.log(tx2);
-
-        return tx2;
+        // const tx2 = await this.wordleContract.methods.getGuessResult().send({from: this.account});
+        // console.log('Get Result Actual');
+        // console.log(tx2);
+        return tx1;
     }
 }
 

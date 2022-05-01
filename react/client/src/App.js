@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import './App.css'
 import {getWeb3} from "./getWeb3"
 import map from "./artifacts/deployments/map.json"
@@ -16,7 +16,11 @@ const App = () =>{
         chainid: null,
         wordle: null,
         enabled: false,
-        wordleInterface: null
+        wordleInterface: null,
+        player: {
+            guesses: [],
+            results: []
+        }
     };
 
     const [state, setState] = useState(initialAppState);
@@ -42,39 +46,53 @@ const App = () =>{
         }
     };
 
-    useState(async () => {
-        // Get network provider and web3 instance.
-        const web3 = await getWeb3();
+    useEffect(() => {
+        const func = async () => {
+            // Get network provider and web3 instance.
+            const web3 = await getWeb3();
 
-        // Try and enable accounts (connect metamask)
-        try {
-            const ethereum = await getEthereum();
-            ethereum.enable();
+            // Try and enable accounts (connect metamask)
+            try {
+                const ethereum = await getEthereum();
+                ethereum.enable();
 
-            // Use web3 to get the user's accounts
-            const accounts = await web3.eth.getAccounts();
+                // Use web3 to get the user's accounts
+                const accounts = await web3.eth.getAccounts();
 
-            if (accountsAvailable(accounts)) {
-                // Get the current chain id
-                const chainid = parseInt(await web3.eth.getChainId());
+                if (accountsAvailable(accounts)) {
+                    // Get the current chain id
+                    const chainid = parseInt(await web3.eth.getChainId());
 
-                const wordle = await loadContract("dev", "Wordle", web3);
-                const enabled = await wordle.methods.enabled(accounts[0]).call();
+                    const wordle = await loadContract("dev", "Wordle", web3);
+                    const enabled = await wordle.methods.enabled(accounts[0]).call();
 
-                setState({
-                    accounts: accounts,
-                    web3: web3,
-                    chainid: chainid,
-                    wordle: wordle,
-                    enabled: (enabled) ?? false,
-                    wordleInterface: new WordleContractInterface(wordle, accounts[0])
-                });
-            }
-        } catch (e) {
-            console.log(`Could not enable accounts. Interaction with contracts not available.
-            Use a modern browser with a Web3 plugin to fix this issue.`);
-            console.log(e);
+                    let player = localStorage.getItem(accounts[0]);
+
+                    if (player) {
+                        player = JSON.parse(player);
+                    } else {
+                        player = initialAppState.player;
+                        localStorage.setItem(accounts[0], JSON.stringify(player));
+                    }
+
+                    setState({
+                        accounts: accounts,
+                        web3: web3,
+                        chainid: chainid,
+                        wordle: wordle,
+                        enabled: (enabled) ?? false,
+                        wordleInterface: new WordleContractInterface(wordle, accounts[0]),
+                        player: player
+                    });
+                }
+            } catch (e) {
+                console.log(`Could not enable accounts. Interaction with contracts not available.
+                Use a modern browser with a Web3 plugin to fix this issue.`);
+                console.log(e);
+            }    
         }
+
+        func();
 
     }, []);
 
