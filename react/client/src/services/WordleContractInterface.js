@@ -32,6 +32,30 @@ export class WordleContractInterface {
         // console.log(tx2);
         return tx1;
     }
+
+    withdrawFunds = async () => {
+        const tx = await this.wordleContract.methods.getPastGamePaymentSplitters().call({from: this.account});
+        if (tx && tx.length > 0) {
+            const paymentSplitterAddress = tx[tx.length-1];
+            
+            let contractArtifact
+            try {
+                contractArtifact = await import(`./artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json`);
+            } catch (e) {
+                console.log(`Failed to load payment splitter contract artifact`);
+                return 0
+            }
+
+            const paymetSplitter = new web3.eth.Contract(contractArtifact.abi, paymentSplitterAddress);
+            const tx = await paymetSplitter.methods.release(this.account).send({from: this.account});
+            if (tx) {
+                return 1;
+            }
+            return 0;
+        } else {
+            return 0;
+        }
+    }
 }
 
 export default WordleContractInterface;
