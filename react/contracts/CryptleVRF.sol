@@ -26,8 +26,10 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
     // Rinkeby coordinator. For other networks,
     // see https://docs.chain.link/docs/vrf-contracts/#configurations
-    //    0x6168499c0cFfCaCD319c818142124B7A15E857ab
-    address vrfCoordinator = 0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6;
+    //    0x6168499c0cFfCaCD319c818142124B7A15E857ab -> Rinkeby
+    //    0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6 -> Macbook
+    //    0xD8a813cefe2200b81e1E362cb2BfD37FBE4e6f44 -> PC
+    address private immutable vrfCoordinator;
 
     // The gas lane to use, which specifies the maximum gas price to bump to.
     // For a list of available gas lanes on each network,
@@ -98,7 +100,9 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
     uint public lotSizeInWei;
 
-    constructor(address[] memory wordListContractAddresses, address[] memory allowedGuessesWordListContractAddresses, uint lotSizeInWeiParam, uint64 vrfSubscriptionId) VRFConsumerBaseV2(vrfCoordinator){
+    constructor(address[] memory wordListContractAddresses, address[] memory allowedGuessesWordListContractAddresses, uint lotSizeInWeiParam, uint64 vrfSubscriptionId, address vrfCoordinatorAddress) VRFConsumerBaseV2(vrfCoordinatorAddress){
+
+        vrfCoordinator = vrfCoordinatorAddress;
 
         for(uint addressNumber = 0; addressNumber<wordListContractAddresses.length;addressNumber++){
             wl = WordList(wordListContractAddresses[addressNumber]);

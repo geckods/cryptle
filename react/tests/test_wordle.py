@@ -5,10 +5,12 @@ import brownie
 from brownie import *
 
 lotSize = 1e16
+skipTestsOfDeprecatedContract = True
 
 
 @pytest.fixture(scope="module")
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def wordle_pre_init_test_mode(accounts, Wordle, word_list):
     """
     Yield a 'Contract' object for the Wordle contract.
@@ -18,6 +20,7 @@ def wordle_pre_init_test_mode(accounts, Wordle, word_list):
 
 @pytest.fixture(scope="module")
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def wordle_basic_deploy_test_mode(wordle_pre_init_test_mode):
     """
     Yield a 'Contract' object for the Wordle contract.
@@ -29,6 +32,7 @@ def wordle_basic_deploy_test_mode(wordle_pre_init_test_mode):
 
 @pytest.fixture(scope="module")
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def wordle_single_signup_test_mode(wordle_basic_deploy_test_mode, accounts):
     """
     Yield a 'Contract' object for the Wordle contract.
@@ -40,6 +44,7 @@ def wordle_single_signup_test_mode(wordle_basic_deploy_test_mode, accounts):
 
 @pytest.fixture(scope="module")
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def wordle_4_player_signup_test_mode(wordle_single_signup_test_mode, accounts):
     """
     Yield a 'Contract' object for the Wordle contract.
@@ -52,6 +57,7 @@ def wordle_4_player_signup_test_mode(wordle_single_signup_test_mode, accounts):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_init_worked(wordle_pre_init_test_mode):
     assert wordle_pre_init_test_mode.currGameState() == 0
     wordle_pre_init_test_mode.initGame()
@@ -59,6 +65,7 @@ def test_init_worked(wordle_pre_init_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_pending_mode(wordle_pre_init_test_mode):
     with brownie.reverts("Error: EXPECTED GameState.IN_PROGRESS"):
         wordle_pre_init_test_mode.signUp({'from': accounts[1], 'amount': '2 ether'})
@@ -71,18 +78,21 @@ def test_pending_mode(wordle_pre_init_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_cannot_init_twice(wordle_basic_deploy_test_mode):
     with brownie.reverts("Error: EXPECTED GameState.PENDING"):
         wordle_basic_deploy_test_mode.initGame()
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_sign_up_insufficient(wordle_basic_deploy_test_mode):
     with brownie.reverts("Error: INSUFFICIENT FUNDS PROVIDED"):
         wordle_basic_deploy_test_mode.signUp({'from': accounts[1], 'amount': lotSize / 2})
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_sign_up_sufficient(wordle_basic_deploy_test_mode):
     wordle_basic_deploy_test_mode.signUp({'from': accounts[1], 'amount': '1 ether'})
 
@@ -95,6 +105,7 @@ def test_sign_up_sufficient(wordle_basic_deploy_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_multiple_sign_up_sufficient(wordle_basic_deploy_test_mode):
     wordle_basic_deploy_test_mode.signUp({'from': accounts[1], 'amount': '1 ether'})
     wordle_basic_deploy_test_mode.signUp({'from': accounts[2], 'amount': '1 ether'})
@@ -107,18 +118,21 @@ def test_multiple_sign_up_sufficient(wordle_basic_deploy_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_cannot_sign_up_twice(wordle_single_signup_test_mode):
     with brownie.reverts("Error: PLAYER ALREADY SIGNED UP"):
         wordle_single_signup_test_mode.signUp({'from': accounts[1], 'amount': '1 ether'})
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_disallowed_guess_from_not_signed_up_user(wordle_single_signup_test_mode):
     with brownie.reverts("Error: PLAYER NOT SIGNED UP"):
         wordle_single_signup_test_mode.makeGuess("HELLO", {'from': accounts[2]})
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_invalid_guess_wrong_length(wordle_single_signup_test_mode):
     with brownie.reverts("Error: INVALID INPUT WORD"):
         wordle_single_signup_test_mode.makeGuess("ABC", {'from': accounts[1]})
@@ -128,6 +142,7 @@ def test_invalid_guess_wrong_length(wordle_single_signup_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_invalid_guess_wrong_characters(wordle_single_signup_test_mode):
     with brownie.reverts("Error: INVALID INPUT WORD"):
         wordle_single_signup_test_mode.makeGuess("hello", {'from': accounts[1]})
@@ -137,6 +152,7 @@ def test_invalid_guess_wrong_characters(wordle_single_signup_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_get_word_try_1(wordle_single_signup_test_mode):
     wordle_single_signup_test_mode.makeGuess("ESSAY", {'from': accounts[1]})
     result = wordle_single_signup_test_mode.getGuessResult.call({'from': accounts[1]})
@@ -155,6 +171,7 @@ def test_get_word_try_1(wordle_single_signup_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_get_word_try_2(wordle_single_signup_test_mode):
     wordle_single_signup_test_mode.makeGuess("WHICH", {'from': accounts[1]})
     result = wordle_single_signup_test_mode.getGuessResult.call({'from': accounts[1]})
@@ -181,6 +198,7 @@ def test_get_word_try_2(wordle_single_signup_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_get_word_try_6(wordle_single_signup_test_mode):
     wordle_single_signup_test_mode.makeGuess("WHICH", {'from': accounts[1]})
     result = wordle_single_signup_test_mode.getGuessResult.call({'from': accounts[1]})
@@ -237,6 +255,7 @@ def test_get_word_try_6(wordle_single_signup_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_get_word_run_out(wordle_single_signup_test_mode):
     for i in range(6):
         makeBadGuess(wordle_single_signup_test_mode, accounts[1])
@@ -245,6 +264,7 @@ def test_get_word_run_out(wordle_single_signup_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_get_word_already_guessed(wordle_single_signup_test_mode):
     wordle_single_signup_test_mode.makeGuess("ESSAY", {'from': accounts[1]})
     wordle_single_signup_test_mode.getGuessResult({'from': accounts[1]})
@@ -253,12 +273,14 @@ def test_get_word_already_guessed(wordle_single_signup_test_mode):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def makeBadGuess(wordleContract, account):
     wordleContract.makeGuess("XXXXX", {'from': account})
     wordleContract.getGuessResult({'from': account})
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def solveInXTries(wordleContract, account, numTries, actualWord):
     if numTries == 1:
         wordleContract.makeGuess(actualWord, {'from': account})
@@ -276,6 +298,7 @@ def solveInXTries(wordleContract, account, numTries, actualWord):
 
 
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def setupSolver(wordleContract, listOfAccounts, listOfNumTries, actualWords):
     for idx, account in enumerate(listOfAccounts):
         solveInXTries(wordleContract, account, listOfNumTries[idx], actualWords[idx])
@@ -305,6 +328,7 @@ def setupSolver(wordleContract, listOfAccounts, listOfNumTries, actualWords):
 #
 #
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_basic_game_4_player(wordle_4_player_signup_test_mode):
     setupSolver(wordle_4_player_signup_test_mode, accounts[1:5], [1, 3, 4, 6], ["ESSAY", "CHINA", "MAYOR", "UPSET"])
 
@@ -355,6 +379,7 @@ def test_basic_game_4_player(wordle_4_player_signup_test_mode):
 #
 #
 @pytest.mark.require_network("development")
+@pytest.mark.skipif(skipTestsOfDeprecatedContract, reason="Skipping test for deprecated contract")
 def test_basic_game_4_player_one_guy_didnt_solve(wordle_4_player_signup_test_mode):
     setupSolver(wordle_4_player_signup_test_mode, accounts[1:4], [3, 4, 5], ["ESSAY", "CHINA", "MAYOR"])
 
