@@ -31,10 +31,15 @@ export class WordleContractInterface {
         // console.log('Get Result Actual');
         // console.log(tx2);
         return tx1;
-    }
+    };
+
+    isSolved = async () => {
+        const tx = await this.wordleContract.methods.solved(this.account).call({from: this.account});
+        return tx;
+    };
 
     withdrawFunds = async () => {
-        const tx = await this.wordleContract.methods.getPastGamePaymentSplitters().call({from: this.account});
+        const tx = await this.wordleContract.methods.pastGamePaymentSplitters().call({from: this.account});
         if (tx && tx.length > 0) {
             const paymentSplitterAddress = tx[tx.length-1];
             
@@ -55,7 +60,7 @@ export class WordleContractInterface {
         } else {
             return 0;
         }
-    }
+    };
 }
 
 export default WordleContractInterface;
