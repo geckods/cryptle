@@ -1,3 +1,7 @@
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+};
+
 export class WordleContractInterface {
     constructor (web3, wordleContract, account) {
         this.web3 = web3;
@@ -18,9 +22,22 @@ export class WordleContractInterface {
         const tx = await this.wordleContract.methods.makeGuess(guess.toUpperCase()).send({from: this.account});
         console.log('Make Guess Txn');
         console.log(tx);
-        const tx1 = await this.getGuessResult();
 
-        return tx1;
+        let resultAvailable = 0;
+        let result;
+
+        while(!resultAvailable) {
+            try {
+                const tx1 = await this.getGuessResult();
+                resultAvailable = 1;
+                result = tx1;
+            } catch (e) {
+                await sleep(10000);
+                console.log(e);
+            }
+        }
+
+        return result;
     };
 
     getGuessResult = async () => {
