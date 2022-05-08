@@ -152,6 +152,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         enabled[msg.sender]=true;
         currWordListForUser[msg.sender] = wordList;
         randomNumberRequestStateForUser[msg.sender] = RandomNumberRequestState.NO_REQUEST;
+        guessState[msg.sender] = UserGuessState.AWAITING_GUESS;
     }
 
     function setOwnerCut(uint newCut) onlyOwner public {
@@ -180,6 +181,24 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
     function getWordListForUser(address a, uint b) onlyOwner public view returns(string memory){
         return currWordListForUser[a][b];
+    }
+
+    function getCurrentPayout(uint count) public view returns (uint){
+
+        require(count > 0 && count <=6, "Error: REQUIRE GUESS NUMBER TO BE BETWEEN 1 AND 6 INCLUSIVE");
+
+        uint total = address(this).balance;
+        total = total * (1000-ownersCut);
+        total = total/1000;
+
+        uint mySplit = payouts[count];
+        uint totalSplit = 0;
+        for(uint i=1;i<=6;i++){
+            totalSplit += payouts[i]*solvedCountByGuesses[i];
+        }
+        totalSplit += mySplit;
+
+        return (total*mySplit)/totalSplit;
     }
 
 
