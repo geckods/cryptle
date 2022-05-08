@@ -70,7 +70,7 @@ const App = () =>{
                     // Get the current chain id
                     const chainid = parseInt(await web3.eth.getChainId());
 
-                    const wordle = await loadContract("dev", "Wordle", web3);
+                    const wordle = await loadContract("dev", "WordleVRF", web3);
                     const enabled = await wordle.methods.enabled(accounts[0]).call();
                     const solved = await wordle.methods.solved(accounts[0]).call();
 
@@ -89,7 +89,7 @@ const App = () =>{
                         chainid: chainid,
                         wordle: wordle,
                         enabled: (enabled) ?? false,
-                        wordleInterface: new WordleContractInterface(wordle, accounts[0]),
+                        wordleInterface: new WordleContractInterface(web3, wordle, accounts[0]),
                         player: player,
                         solved: solved
                     });

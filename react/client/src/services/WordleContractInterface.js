@@ -1,5 +1,6 @@
 export class WordleContractInterface {
-    constructor (wordleContract, account) {
+    constructor (web3, wordleContract, account) {
+        this.web3 = web3;
         this.wordleContract = wordleContract;
         this.account = account;
     }
@@ -45,13 +46,13 @@ export class WordleContractInterface {
             
             let contractArtifact
             try {
-                contractArtifact = await import(`./artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json`);
+                contractArtifact = await import(`../artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json`);
             } catch (e) {
                 console.log(`Failed to load payment splitter contract artifact`);
                 return 0
             }
 
-            const paymetSplitter = new web3.eth.Contract(contractArtifact.abi, paymentSplitterAddress);
+            const paymetSplitter = new this.web3.eth.Contract(contractArtifact.abi, paymentSplitterAddress);
             const tx = await paymetSplitter.methods.release(this.account).send({from: this.account});
             if (tx) {
                 return 1;
