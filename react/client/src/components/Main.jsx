@@ -1,5 +1,5 @@
 import '../App.css';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AppContext from '../contexts/AppContext';
 import WordleGrid from './WordleGrid';
 import { isValidGuess } from '../utils/WordleUtils';
@@ -22,8 +22,21 @@ const Play = () => {
 
     const [guessing, setGuessing] = useState(false);
     const [guess, setGuess] = useState('');
+    const [complete, setComplete] = useState(0);
 
-    const player = JSON.parse(localStorage.getItem(context.getActiveAccount()));
+    const [player, setPlayer] = useState(JSON.parse(localStorage.getItem(context.getActiveAccount())));
+
+    const isGameComplete = async () => {
+        const guessCount = context.getPlayer().guesses.length;
+        const isSolved = context.isGameSolved();
+        return isSolved || guessCount === 6;
+    };
+
+    useEffect(() => {
+        isGameComplete().then((result) => {
+            setComplete(result);
+        })
+    }, [player]);
 
     const makeGuess = () => {
         if (isValidGuess(guess)) {
@@ -40,8 +53,24 @@ const Play = () => {
             alert('invalid guess');
         }
     };
+
+    const widthdrawFunds = () => {
+        wordleInterface.widthdrawFunds().then((tx) => {
+            console.log(tx);
+            alert('Success');
+        }).catch((e) => {
+            console.log(e);
+            alert('Fail');
+        });
+    }
     
     return (
+        (complete) ?
+        <div>
+            <WordleGrid guesses={player.guesses} results={player.results} />
+            <br/>
+            <button onClick={() => widthdrawFunds()}>Withdraw Funds</button>
+        </div> :
         <div>
             {
             (!guessing) ?
@@ -62,6 +91,7 @@ const Play = () => {
             <div>Guessing ...</div>
             }
         </div>
+        
     )
 }
 

@@ -20,7 +20,8 @@ const App = () =>{
         player: {
             guesses: [],
             results: []
-        }
+        },
+        solved: false
     };
 
     const [state, setState] = useState(initialAppState);
@@ -43,6 +44,12 @@ const App = () =>{
         },
         getWordleInterface: () => {
             return state.wordleInterface
+        },
+        getPlayer: () => {
+            return state.player
+        },
+        isGameSolved: () => {
+            return state.solved
         }
     };
 
@@ -65,6 +72,7 @@ const App = () =>{
 
                     const wordle = await loadContract("dev", "Wordle", web3);
                     const enabled = await wordle.methods.enabled(accounts[0]).call();
+                    const solved = await wordle.methods.solved(accounts[0]).call();
 
                     let player = localStorage.getItem(accounts[0]);
 
@@ -82,7 +90,8 @@ const App = () =>{
                         wordle: wordle,
                         enabled: (enabled) ?? false,
                         wordleInterface: new WordleContractInterface(wordle, accounts[0]),
-                        player: player
+                        player: player,
+                        solved: solved
                     });
                 }
             } catch (e) {
