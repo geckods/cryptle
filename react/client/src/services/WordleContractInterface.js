@@ -10,7 +10,7 @@ export class WordleContractInterface {
     }
 
     signUp = () => {
-        this.wordleContract.methods.signUp().send({value: 1000000000000000000, from: this.account}).then((tx) => {
+        this.wordleContract.methods.signUp().send({value: 100000000000000000, from: this.account}).then((tx) => {
             console.log(tx);
         }).catch((e) => {
             console.log('error');
@@ -45,10 +45,10 @@ export class WordleContractInterface {
         console.log('Get Result Dry Run');
         console.log(tx1);
 
-        // const tx2 = await this.wordleContract.methods.getGuessResult().send({from: this.account});
-        // console.log('Get Result Actual');
-        // console.log(tx2);
-        return tx1;
+         const tx2 = await this.wordleContract.methods.getGuessResult().send({from: this.account});
+         console.log('Get Result Actual');
+         console.log(tx2);
+        return tx2;
     };
 
     isSolved = async () => {

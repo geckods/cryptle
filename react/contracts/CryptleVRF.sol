@@ -29,7 +29,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     //    0x6168499c0cFfCaCD319c818142124B7A15E857ab -> Rinkeby
     //    0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6 -> Macbook
     //    0xD8a813cefe2200b81e1E362cb2BfD37FBE4e6f44 -> PC
-    address private immutable vrfCoordinator;
+    address private vrfCoordinator;
 
     // The gas lane to use, which specifies the maximum gas price to bump to.
     // For a list of available gas lanes on each network,
@@ -100,24 +100,8 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
     uint public lotSizeInWei;
 
-    constructor(address[] memory wordListContractAddresses, address[] memory allowedGuessesWordListContractAddresses, uint lotSizeInWeiParam, uint64 vrfSubscriptionId, address vrfCoordinatorAddress) VRFConsumerBaseV2(vrfCoordinatorAddress){
-
+    constructor(uint lotSizeInWeiParam, uint64 vrfSubscriptionId, address vrfCoordinatorAddress) VRFConsumerBaseV2(vrfCoordinatorAddress){
         vrfCoordinator = vrfCoordinatorAddress;
-
-        for(uint addressNumber = 0; addressNumber<wordListContractAddresses.length;addressNumber++){
-            wl = WordList(wordListContractAddresses[addressNumber]);
-
-            for(uint i=0;i<wl.getWordListLength();i++){
-                wordList.push(wl.wordList(i));
-            }
-        }
-
-        for(uint addressNumber = 0; addressNumber<allowedGuessesWordListContractAddresses.length;addressNumber++){
-            wl = WordList(allowedGuessesWordListContractAddresses[addressNumber]);
-            for(uint i=0;i<wl.getWordListLength();i++){
-                allowedWords[wl.wordList(i)]=true;
-            }
-        }
 
         lotSizeInWei = lotSizeInWeiParam;
 
@@ -126,6 +110,25 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         s_owner = msg.sender;
         s_subscriptionId = vrfSubscriptionId;
+    }
+
+    function populateTargetWordsLists(address[] memory wordListContractAddresses) onlyOwner public {
+        for(uint addressNumber = 0; addressNumber<wordListContractAddresses.length;addressNumber++){
+            wl = WordList(wordListContractAddresses[addressNumber]);
+
+            for(uint i=0;i<wl.getWordListLength();i++){
+                wordList.push(wl.wordList(i));
+            }
+        }
+    }
+
+    function populateAllowedGuessesWordList(address[] memory allowedGuessesWordListContractAddresses) onlyOwner public {
+        for(uint addressNumber = 0; addressNumber<allowedGuessesWordListContractAddresses.length;addressNumber++){
+            wl = WordList(allowedGuessesWordListContractAddresses[addressNumber]);
+            for(uint i=0;i<wl.getWordListLength();i++){
+                allowedWords[wl.wordList(i)]=true;
+            }
+        }
     }
 
     function fulfillRandomWords(

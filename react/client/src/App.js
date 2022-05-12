@@ -70,7 +70,9 @@ const App = () =>{
                     // Get the current chain id
                     const chainid = parseInt(await web3.eth.getChainId());
 
-                    const wordle = await loadContract("dev", "WordleVRF", web3);
+//                    const wordle = await loadContract("dev", "WordleVRF", web3);
+                    const wordleArtifact = await import(`./artifacts/contracts/WordleVRF.json`);
+                    const wordle = new web3.eth.Contract(wordleArtifact.abi, "0x5942d50255c3e3ff48fb97608fea344f85cdc777");
                     const enabled = await wordle.methods.enabled(accounts[0]).call();
                     const solved = await wordle.methods.solved(accounts[0]).call();
 

@@ -27,7 +27,7 @@ const Play = () => {
     const [player, setPlayer] = useState(JSON.parse(localStorage.getItem(context.getActiveAccount())));
 
     const isGameComplete = async () => {
-        const guessCount = context.getPlayer().guesses.length;
+        const guessCount = context.getPlayer().results.length;
         const isSolved = context.isGameSolved();
         return isSolved || guessCount === 6;
     };
