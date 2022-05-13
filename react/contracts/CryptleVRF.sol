@@ -23,6 +23,9 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
     // Your subscription ID.
     uint64 public s_subscriptionId;
+    function setSubscriptionId(uint64 newSubscriptionId) onlyOwner public {
+        s_subscriptionId = newSubscriptionId;
+    }
 
     // Rinkeby coordinator. For other networks,
     // see https://docs.chain.link/docs/vrf-contracts/#configurations
@@ -37,6 +40,9 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     // Mumbai : 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f
     // Rinkeby : 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc
     bytes32 public keyHash = 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;
+    function setKeyHash(bytes32 newKeyHash) onlyOwner public {
+        keyHash = newKeyHash;
+    }
 
     // Depends on the number of requested values that you want sent to the
     // fulfillRandomWords() function. Storing each word costs about 20,000 gas,
@@ -45,9 +51,15 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     // and the processing of the callback request in the fulfillRandomWords()
     // function.
     uint32 public callbackGasLimit = 1000000;
+    function setCallbackGasLimit(uint32 newCallbackGasLimit) onlyOwner public {
+        callbackGasLimit = newCallbackGasLimit;
+    }
 
     // The default is 3, but you can set this higher.
     uint16 public requestConfirmations = 3;
+    function setRequestConfirmations(uint16 newRequestConfirmations) onlyOwner public {
+        requestConfirmations = newRequestConfirmations;
+    }
 
     // For this example, retrieve 2 random values in one request.
     // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
