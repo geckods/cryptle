@@ -17,7 +17,9 @@ def wordle_pre_init_test_mode(accounts, WordleVRF, word_list):
     vrfCoordinatorV2Mock.createSubscription()
     vrfCoordinatorV2Mock.fundSubscription(1, 10000000000)
 
-    wordle = accounts[0].deploy(WordleVRF, [word_list.address], [word_list.address], lotSize, 1, vrfCoordinatorV2Mock.address)
+    wordle = accounts[0].deploy(WordleVRF, lotSize, 1, vrfCoordinatorV2Mock.address)
+    wordle.appendToTargetWordLists([word_list.address])
+    wordle.appendToAllowedGuessesWordList([word_list.address])
     return wordle, vrfCoordinatorV2Mock
 
 
@@ -180,7 +182,7 @@ def test_get_word_try_1(wordle_single_signup_test_mode):
 
     assert wordle.numberOfGuesses(accounts[1]) == 1
     assert wordle.solved(accounts[1]) is True
-    assert wordle.getSolvedCountsByGuessNumber(1) == 1
+    assert wordle.solvedCountByGuesses(1) == 1
 
 
 @pytest.mark.require_network("development")
@@ -202,7 +204,7 @@ def test_get_word_try_2(wordle_single_signup_test_mode):
     assert result == (0, 0, 0, 0, 0)
     assert wordle.numberOfGuesses(accounts[1]) == 2
     assert wordle.solved(accounts[1]) is True
-    assert wordle.getSolvedCountsByGuessNumber(2) == 1
+    assert wordle.solvedCountByGuesses(2) == 1
 
 
 #
@@ -260,7 +262,7 @@ def test_get_word_try_2(wordle_single_signup_test_mode):
 #     assert result == (0, 0, 0, 0, 0)
 #     assert wordle_single_signup_test_mode.numberOfGuesses(accounts[1]) == 6
 #     assert wordle_single_signup_test_mode.solved(accounts[1]) is True
-#     assert wordle_single_signup_test_mode.getSolvedCountsByGuessNumber(6) == 1
+#     assert wordle_single_signup_test_mode.solvedCountByGuesses(6) == 1
 #
 #
 # @pytest.mark.require_network("development")
@@ -363,13 +365,13 @@ def test_basic_game_4_player(wordle_4_player_signup_test_mode):
     for account in accounts[1:5]:
         assert wordle.solved(account) is True
 
-    assert wordle.getSolvedCountsByGuessNumber(0) == 0
-    assert wordle.getSolvedCountsByGuessNumber(1) == 1
-    assert wordle.getSolvedCountsByGuessNumber(2) == 0
-    assert wordle.getSolvedCountsByGuessNumber(3) == 1
-    assert wordle.getSolvedCountsByGuessNumber(4) == 1
-    assert wordle.getSolvedCountsByGuessNumber(5) == 0
-    assert wordle.getSolvedCountsByGuessNumber(6) == 1
+    assert wordle.solvedCountByGuesses(0) == 0
+    assert wordle.solvedCountByGuesses(1) == 1
+    assert wordle.solvedCountByGuesses(2) == 0
+    assert wordle.solvedCountByGuesses(3) == 1
+    assert wordle.solvedCountByGuesses(4) == 1
+    assert wordle.solvedCountByGuesses(5) == 0
+    assert wordle.solvedCountByGuesses(6) == 1
 
     paymentSplitterAddress = wordle.payoutAndReset.call()
     wordle.payoutAndReset()
@@ -382,7 +384,7 @@ def test_basic_game_4_player(wordle_4_player_signup_test_mode):
 
     assert wordle.getPlayerCount() == 0
     for i in range(7):
-        assert wordle.getSolvedCountsByGuessNumber(i) == 0
+        assert wordle.solvedCountByGuesses(i) == 0
 
     with open(
             "client/src/artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json",
@@ -418,13 +420,13 @@ def test_basic_game_4_player_one_guy_didnt_solve(wordle_4_player_signup_test_mod
         assert wordle.solved(account) is True
     assert wordle.solved(accounts[4]) is False
 
-    assert wordle.getSolvedCountsByGuessNumber(0) == 0
-    assert wordle.getSolvedCountsByGuessNumber(1) == 0
-    assert wordle.getSolvedCountsByGuessNumber(2) == 0
-    assert wordle.getSolvedCountsByGuessNumber(3) == 1
-    assert wordle.getSolvedCountsByGuessNumber(4) == 1
-    assert wordle.getSolvedCountsByGuessNumber(5) == 1
-    assert wordle.getSolvedCountsByGuessNumber(6) == 0
+    assert wordle.solvedCountByGuesses(0) == 0
+    assert wordle.solvedCountByGuesses(1) == 0
+    assert wordle.solvedCountByGuesses(2) == 0
+    assert wordle.solvedCountByGuesses(3) == 1
+    assert wordle.solvedCountByGuesses(4) == 1
+    assert wordle.solvedCountByGuesses(5) == 1
+    assert wordle.solvedCountByGuesses(6) == 0
 
     paymentSplitterAddress = wordle.payoutAndReset.call()
     wordle.payoutAndReset()
@@ -437,7 +439,7 @@ def test_basic_game_4_player_one_guy_didnt_solve(wordle_4_player_signup_test_mod
 
     assert wordle.getPlayerCount() == 0
     for i in range(7):
-        assert wordle.getSolvedCountsByGuessNumber(i) == 0
+        assert wordle.solvedCountByGuesses(i) == 0
 
     with open(
             "client/src/artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json",
