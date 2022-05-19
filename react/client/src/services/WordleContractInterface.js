@@ -22,15 +22,18 @@ export class WordleContractInterface {
         const tx = await this.wordleContract.methods.makeGuess(guess.toUpperCase()).send({from: this.account});
         console.log('Make Guess Txn');
         console.log(tx);
+        return tx;
+    };
 
+    pollGuessResult = async () => {
         let resultAvailable = 0;
         let result;
 
         while(!resultAvailable) {
             try {
-                const tx1 = await this.getGuessResult();
+                const tx1 = await this.getGuessResultCall();
+                result = await this.getGuessResultSend();
                 resultAvailable = 1;
-                result = tx1;
             } catch (e) {
                 await sleep(10000);
                 console.log(e);
@@ -38,18 +41,62 @@ export class WordleContractInterface {
         }
 
         return result;
-    };
+    }
 
-    getGuessResult = async () => {
+    getPlayerState = async () => {
+        const enabled = await this.wordleContract.methods.enabled(this.account).call();
+        const solved = await this.wordleContract.methods.solved(this.account).call();
+        const numberOfGuesses = await this.wordleContract.methods.numberOfGuesses(this.account).call();
+        const userGuessState = await this.wordleContract.methods.guessState(this.account).call();
+
+        let guesses = [];
+        let results = [];
+
+        for(let i=0;i<=numberOfGuesses;i++){
+            if(i!=numberOfGuesses || userGuessState === 1){
+                const guess = await this.wordleContract.methods.userGuesses(this.account, i).call();
+                guesses.push(guess);
+            }
+        }
+
+        for(let i=0;i<numberOfGuesses;i++){
+            let result = [];
+            for(let j=0;j<5;j++){
+                const resultElement = await this.wordleContract.methods.guessStore(this.account, i, j).call();
+                result.append(resultElement);
+            }
+            results.append(result);
+        }
+
+        let userObject = {
+                enabled:enabled,
+                solved:solved,
+                numberOfGuesses: numberOfGuesses,
+                userGuessState: Number(userGuessState),
+                guesses:guesses,
+                results:results
+        }
+
+        console.log(userObject);
+        return userObject;
+
+
+    }
+
+    getGuessResultCall = async () => {
         const tx1 = await this.wordleContract.methods.getGuessResult().call({from: this.account});
         console.log('Get Result Dry Run');
         console.log(tx1);
-
-         const tx2 = await this.wordleContract.methods.getGuessResult().send({from: this.account});
-         console.log('Get Result Actual');
-         console.log(tx2);
-        return tx2;
+        return tx1;
     };
+
+    getGuessResultSend = async () => {
+        const tx1 = await this.wordleContract.methods.getGuessResult().send({from: this.account});
+        console.log('Get Result Reak Run');
+        console.log(tx1);
+        return tx1;
+    };
+
 
     isSolved = async () => {
         const tx = await this.wordleContract.methods.solved(this.account).call({from: this.account});

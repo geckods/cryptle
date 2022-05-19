@@ -9,19 +9,19 @@ const WordleGridRow = (props) => {
     if (guess) {
         return (
             <tr>
-                <td className={guessResultCharacterClass[result[0]]}>
+                <td className={guessResultCharacterClass[result ? result[0]:3]}>
                     {guess[0]}
                 </td>
-                <td className={guessResultCharacterClass[result[1]]}>
+                <td className={guessResultCharacterClass[result ? result[1]:3]}>
                     {guess[1]}
                 </td>
-                <td className={guessResultCharacterClass[result[2]]}>
+                <td className={guessResultCharacterClass[result ? result[2]:3]}>
                     {guess[2]}
                 </td>
-                <td className={guessResultCharacterClass[result[3]]}>
+                <td className={guessResultCharacterClass[result ? result[3]:3]}>
                     {guess[3]}
                 </td>
-                <td className={guessResultCharacterClass[result[4]]}>
+                <td className={guessResultCharacterClass[result ? result[4]:3]}>
                     {guess[4]}
                 </td>
             </tr>

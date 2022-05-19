@@ -20,22 +20,40 @@ const Play = () => {
     const context = useContext(AppContext);
     const wordleInterface = context.getWordleInterface();
 
-    const [guessing, setGuessing] = useState(false);
-    const [guess, setGuess] = useState('');
-    const [complete, setComplete] = useState(0);
+    const [player, setPlayer] = useState(context.getPlayer());
 
-    const [player, setPlayer] = useState(JSON.parse(localStorage.getItem(context.getActiveAccount())));
+    console.log('AAA');
+    console.log(player);
+
+
+    const [guessing, setGuessing] = useState(player.userGuessState);
+    const [guess, setGuess] = useState('');
 
     const isGameComplete = async () => {
         const guessCount = context.getPlayer().results.length;
-        const isSolved = context.isGameSolved();
-        return isSolved || guessCount === 6;
+        const isSolved = context.getPlayer().solved;
+        return isSolved || (guessCount === 6 && context.getPlayer().userGuessState == 0);
     };
+
+
+    const [loading, setLoading] = useState(1);
+    const [complete, setComplete] = useState(-1);
+
 
     useEffect(() => {
         isGameComplete().then((result) => {
             setComplete(result);
+            setLoading(0);
         })
+
+        if(guessing){
+            wordleInterface.pollGuessResult().then((result) => {
+                wordleInterface.getPlayerState().then((player) => {
+                    context.setPlayer(player);
+                });
+            });
+        }
+
     }, [player]);
 
     const makeGuess = () => {
@@ -43,7 +61,6 @@ const Play = () => {
             setGuessing(true);
             wordleInterface.makeGuess(guess).then((tx) => {
                 console.log(tx);
-                save(guess, tx, context.getActiveAccount());
             }).catch((e) => {
                 console.log('error');
                 console.log(e);
@@ -76,9 +93,9 @@ const Play = () => {
             (!guessing) ?
             <div>
                 <WordleGrid guesses={player.guesses} results={player.results} />
-                <input 
-                    id='guess-string' 
-                    maxLength={5} 
+                <input
+                    id='guess-string'
+                    maxLength={5}
                     minLength={5}
                     value={guess}
                     onChange={(event) => {
@@ -88,7 +105,9 @@ const Play = () => {
                 <br/>
                 <button onClick={() => makeGuess()}>Submit Guess</button>
             </div>:
-            <div>Guessing ...</div>
+            <div>Guessing ...
+                <WordleGrid guesses={player.guesses} results={player.results} />
+            </div>
             }
         </div>
         
@@ -97,7 +116,7 @@ const Play = () => {
 
 function Main() {
   const context = useContext(AppContext);
-  const enabled = context.isGameEnabled();
+  const enabled = context.getPlayer().enabled;
 
   return (
     <div className="App">

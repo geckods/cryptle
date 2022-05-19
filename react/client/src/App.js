@@ -14,14 +14,11 @@ const App = () =>{
         web3: null,
         accounts: null,
         chainid: null,
-        wordle: null,
-        enabled: false,
         wordleInterface: null,
         player: {
             guesses: [],
             results: []
         },
-        solved: false
     };
 
     const [state, setState] = useState(initialAppState);
@@ -36,20 +33,17 @@ const App = () =>{
         getChainId: () => {
             return state.chainid
         },
-        isGameEnabled: () => {
-            return state.enabled
-        },
-        getWordle: () => {
-            return state.wordle
-        },
         getWordleInterface: () => {
             return state.wordleInterface
         },
         getPlayer: () => {
             return state.player
         },
-        isGameSolved: () => {
-            return state.solved
+        setPlayer: (player) => {
+            setState({
+                ...state, player: player
+            })
+
         }
     };
 
@@ -72,35 +66,28 @@ const App = () =>{
 
 //                    const wordle = await loadContract("dev", "WordleVRF", web3);
                     const wordleArtifact = await import(`./artifacts/contracts/WordleVRF.json`);
-                    const wordle = new web3.eth.Contract(wordleArtifact.abi, "0x5942d50255c3e3ff48fb97608fea344f85cdc777");
-                    const enabled = await wordle.methods.enabled(accounts[0]).call();
-                    const solved = await wordle.methods.solved(accounts[0]).call();
+                    const wordle = new web3.eth.Contract(wordleArtifact.abi, "0xC5372834cBA4ca8F407129e9aE1d4019FA3F07bc");
+                    const wordleInterface = new WordleContractInterface(web3, wordle, accounts[0])
+                    console.log(wordle);
 
-                    let player = localStorage.getItem(accounts[0]);
+                    const playerState = await wordleInterface.getPlayerState();
 
-                    if (player) {
-                        player = JSON.parse(player);
-                    } else {
-                        player = initialAppState.player;
-                        localStorage.setItem(accounts[0], JSON.stringify(player));
-                    }
+                    let player = playerState
 
                     setState({
                         accounts: accounts,
                         web3: web3,
                         chainid: chainid,
-                        wordle: wordle,
-                        enabled: (enabled) ?? false,
-                        wordleInterface: new WordleContractInterface(web3, wordle, accounts[0]),
+                        wordleInterface: wordleInterface,
                         player: player,
-                        solved: solved
                     });
                 }
             } catch (e) {
                 console.log(`Could not enable accounts. Interaction with contracts not available.
                 Use a modern browser with a Web3 plugin to fix this issue.`);
                 console.log(e);
-            }    
+            }
+
         }
 
         func();
