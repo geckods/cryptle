@@ -1,3 +1,9 @@
+@font-face {
+  font-family: font;
+  src: url('fonts/VCR_OSD_MONO.ttf');
+}
+
+
 .App {
   text-align: center;
 }
@@ -51,13 +57,18 @@ table {
 }
 
 .green-cell {
-  background-color: green;
+  background-color: lightgreen;
 }
 
 .yellow-cell {
-  background-color: yellow;
+  background-color: #f5ff8a;
 }
 
 .gray-cell {
   background-color: lightgray;
+}
+
+#cryptle-logo-container td {
+  font-family: font !important;
+  border: none;
 }

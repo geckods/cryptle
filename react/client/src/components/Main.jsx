@@ -3,17 +3,21 @@ import React, { useContext, useEffect, useState } from 'react';
 import AppContext from '../contexts/AppContext';
 import WordleGrid from './WordleGrid';
 import { isValidGuess } from '../utils/WordleUtils';
-import { getValues, save } from '../utils/StorageUtils';
+import CryptleLogo from './CryptleLogo';
 
 const SignUp = () => {
     const context = useContext(AppContext);
     const wordleInterface = context.getWordleInterface();
 
     return (
-        <button onClick={() => wordleInterface.signUp()}>
-            Sign Up
-        </button>
-    )
+        <div>
+            <CryptleLogo />
+            <br/>
+            <button id={'signup-button'} onClick={() => wordleInterface.signUp()}>
+                Sign Up
+            </button>
+        </div>
+    );
 };
 
 const Play = () => {
@@ -118,6 +122,7 @@ function Main() {
   const context = useContext(AppContext);
   const enabled = context.getPlayer().enabled;
 
+  
   return (
     <div className="App">
       <header>
