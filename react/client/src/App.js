@@ -7,6 +7,7 @@ import Main from "./components/Main"
 import AppContext from "./contexts/AppContext"
 import WordleContractInterface from "./services/WordleContractInterface"
 import { accountsAvailable } from "./utils/Web3Utils"
+import Loading from "./components/Loading"
 
 const App = () =>{
 
@@ -15,10 +16,8 @@ const App = () =>{
         accounts: null,
         chainid: null,
         wordleInterface: null,
-        player: {
-            guesses: [],
-            results: []
-        },
+        player: null,
+        loading: true
     };
 
     const [state, setState] = useState(initialAppState);
@@ -66,13 +65,13 @@ const App = () =>{
 
 //                    const wordle = await loadContract("dev", "WordleVRF", web3);
                     const wordleArtifact = await import(`./artifacts/contracts/WordleVRF.json`);
-                    const wordle = new web3.eth.Contract(wordleArtifact.abi, "0xC5372834cBA4ca8F407129e9aE1d4019FA3F07bc");
+                    const wordle = new web3.eth.Contract(wordleArtifact.abi, "0x4E2F7e4De568B56d2CDf9022bADf8843bD6F1eD4");
                     const wordleInterface = new WordleContractInterface(web3, wordle, accounts[0])
                     console.log(wordle);
 
                     const playerState = await wordleInterface.getPlayerState();
 
-                    let player = playerState
+                    let player = playerState;
 
                     setState({
                         accounts: accounts,
@@ -80,6 +79,7 @@ const App = () =>{
                         chainid: chainid,
                         wordleInterface: wordleInterface,
                         player: player,
+                        loading: false
                     });
                 }
             } catch (e) {
@@ -122,6 +122,8 @@ const App = () =>{
     return (
         <AppContext.Provider value={contextFunctions}>
             {
+                (state.loading) ?
+                <Loading /> :
                 (state.web3 && state.chainid) ?
                 <Main /> :
                 <div>Disconnected</div>

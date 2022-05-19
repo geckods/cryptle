@@ -1,5 +1,15 @@
+@font-face {
+  font-family: font;
+  src: url('fonts/VCR_OSD_MONO.ttf');
+}
+
+
 .App {
   text-align: center;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  border: 1px solid red;
 }
 
 .App-logo {
@@ -48,16 +58,51 @@ td {
 table {
   margin-left: auto;
   margin-right: auto;
+  font-family: font;
+  border: none;
 }
 
 .green-cell {
-  background-color: green;
+  background-color: lightgreen;
 }
 
 .yellow-cell {
-  background-color: yellow;
+  background-color: #f5ff8a;
 }
 
 .gray-cell {
   background-color: lightgray;
+}
+
+#cryptle-logo-container td {
+  font-family: font !important;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  font-family: 1.2em;
+}
+
+#signup-button {
+  border: none;
+  background: none;
+  font-family: font;
+  color: gray;
+}
+
+#signup-button-arrow {
+  font-size: 3em;
+  color: lightseagreen;
+}
+
+#signup-button:hover {
+  opacity: 0.6;
+}
+
+#loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+  width: 90vw;
 }
