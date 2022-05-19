@@ -8,6 +8,7 @@ import WordleContractInterface from "./services/WordleContractInterface"
 import { accountsAvailable } from "./utils/Web3Utils"
 import Loading from "./components/Loading"
 import Disconnected from "./components/Disconnected";
+import { isValidGuess } from "./utils/WordleUtils"
 
 const initialAppState = {
     web3: null,
@@ -59,7 +60,7 @@ const App = () =>{
                     // Get the current chain id
                     const chainid = parseInt(await web3.eth.getChainId());
                     const wordleArtifact = await import(`./artifacts/contracts/WordleVRF.json`);
-                    const wordle = new web3.eth.Contract(wordleArtifact.abi, "0x4E2F7e4De568B56d2CDf9022bADf8843bD6F1eD4");
+                    const wordle = new web3.eth.Contract(wordleArtifact.abi, "0xa6C6fddEd8ccd21066eE2972B08A00D8032DC7Ea");
                     const wordleInterface = new WordleContractInterface(web3, wordle, accounts[0])
                     const playerState = await wordleInterface.getPlayerState();
 
