@@ -3,6 +3,7 @@ import WordleGrid from './WordleGrid';
 import AppContext from '../contexts/AppContext';
 import { isValidGuess } from '../utils/WordleUtils';
 import Header from "./Header";
+import Payout from "./Payout";
 
 const Play = () => {
     const context = useContext(AppContext);
@@ -76,7 +77,7 @@ const Play = () => {
             <Header />
             <WordleGrid guesses={player.guesses} results={player.results} />
             <br/>
-            <button onClick={() => widthdrawFunds()}>Withdraw Funds</button>
+            <Payout/>
         </div> :
         <div>
             <Header />
