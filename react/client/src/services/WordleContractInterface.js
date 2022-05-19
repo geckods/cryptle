@@ -1,5 +1,5 @@
 const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
 export class WordleContractInterface {
@@ -48,6 +48,7 @@ export class WordleContractInterface {
         const solved = await this.wordleContract.methods.solved(this.account).call();
         const numberOfGuesses = await this.wordleContract.methods.numberOfGuesses(this.account).call();
         const userGuessState = await this.wordleContract.methods.guessState(this.account).call();
+        const currGameState = await this.wordleContract.methods.currGameState().call();
 
         let guesses = [];
         let results = [];
@@ -74,7 +75,8 @@ export class WordleContractInterface {
                 numberOfGuesses: numberOfGuesses,
                 userGuessState: Number(userGuessState),
                 guesses:guesses,
-                results:results
+                results:results,
+                currGameState
         }
 
         console.log(userObject);
