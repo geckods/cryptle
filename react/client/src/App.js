@@ -7,6 +7,7 @@ import Main from "./components/Main"
 import AppContext from "./contexts/AppContext"
 import WordleContractInterface from "./services/WordleContractInterface"
 import { accountsAvailable } from "./utils/Web3Utils"
+import Loading from "./components/Loading"
 
 const App = () =>{
 
@@ -15,10 +16,8 @@ const App = () =>{
         accounts: null,
         chainid: null,
         wordleInterface: null,
-        player: {
-            guesses: [],
-            results: []
-        },
+        player: null,
+        loading: true
     };
 
     const [state, setState] = useState(initialAppState);
@@ -72,7 +71,7 @@ const App = () =>{
 
                     const playerState = await wordleInterface.getPlayerState();
 
-                    let player = playerState
+                    let player = playerState;
 
                     setState({
                         accounts: accounts,
@@ -80,6 +79,7 @@ const App = () =>{
                         chainid: chainid,
                         wordleInterface: wordleInterface,
                         player: player,
+                        loading: false
                     });
                 }
             } catch (e) {
@@ -122,6 +122,8 @@ const App = () =>{
     return (
         <AppContext.Provider value={contextFunctions}>
             {
+                (state.loading) ?
+                <Loading /> :
                 (state.web3 && state.chainid) ?
                 <Main /> :
                 <div>Disconnected</div>
