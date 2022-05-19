@@ -1,6 +1,6 @@
 export const guessResultCharacterClass = [
-    'green-cell',
-    'yellow-cell',
     'gray-cell',
+    'yellow-cell',
+    'green-cell',
     'white-cell'
 ];

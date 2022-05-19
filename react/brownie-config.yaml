@@ -42,3 +42,6 @@ compiler:
     remappings:
       - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.5.0'
       - "@chainlink=smartcontractkit/chainlink@1.2.1"
+    optimizer:
+      enabled: true
+      runs: 10000

@@ -63,9 +63,9 @@ export class WordleContractInterface {
             let result = [];
             for(let j=0;j<5;j++){
                 const resultElement = await this.wordleContract.methods.guessStore(this.account, i, j).call();
-                result.append(resultElement);
+                result.push(resultElement);
             }
-            results.append(result);
+            results.push(result);
         }
 
         let userObject = {

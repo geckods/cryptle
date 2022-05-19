@@ -61,7 +61,6 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         requestConfirmations = newRequestConfirmations;
     }
 
-    // For this example, retrieve 2 random values in one request.
     // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
     uint32 public numWords =  1;
 
@@ -123,7 +122,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         return ownersCut;
     }
 
-    enum WordleResult{ GREEN, YELLOW, GREY } //enum represents the outcome of a wordle guess at a single character level
+    enum WordleResult{ GREY, YELLOW, GREEN } //enum represents the outcome of a wordle guess at a single character level
 
     // the contract starts in PENDING. The owner must call init to move it to IN_PROGRESS, where players can sign up and play
     // when the owner calls payoutAndReset, then it goes back to PENDING
@@ -154,9 +153,10 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     }
 
     event AppendToTargetWordList(uint indexed currentGameNumber, uint originalTargetWordListLength, uint updatedTargetWordListLength);
-    function appendToTargetWordLists(address[] memory wordListContractAddresses) onlyOwner public {
+    function appendToTargetWordLists(address[] calldata wordListContractAddresses) onlyOwner public {
         uint originalTargetWordListLength = targetWordList.length;
-        for(uint addressNumber = 0; addressNumber<wordListContractAddresses.length;addressNumber++){
+        uint wordListContractAddressesLength = wordListContractAddresses.length;
+        for(uint addressNumber = 0; addressNumber<wordListContractAddressesLength;addressNumber++){
             wl = WordList(wordListContractAddresses[addressNumber]);
 
             for(uint i=0;i<wl.getWordListLength();i++){
@@ -167,8 +167,9 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     }
 
     event AppendToAllowedGuessWordList(uint indexed currentGameNumber); //todo: track the size of the AllowedGuessWordList
-    function appendToAllowedGuessesWordList(address[] memory allowedGuessesWordListContractAddresses) onlyOwner public {
-        for(uint addressNumber = 0; addressNumber<allowedGuessesWordListContractAddresses.length;addressNumber++){
+    function appendToAllowedGuessesWordList(address[] calldata allowedGuessesWordListContractAddresses) onlyOwner public {
+        uint allowedGuessesWordListContractAddressesLength = allowedGuessesWordListContractAddresses.length;
+        for(uint addressNumber = 0; addressNumber<allowedGuessesWordListContractAddressesLength;addressNumber++){
             wl = WordList(allowedGuessesWordListContractAddresses[addressNumber]);
             for(uint i=0;i<wl.getWordListLength();i++){
                 allowedWords[wl.wordList(i)]=true;
@@ -243,7 +244,9 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         require(enabled[msg.sender], "Error: PLAYER NOT SIGNED UP");
         require(guessState[msg.sender] == UserGuessState.PROCESSING_GUESS, "Error: EXPECTED UserGuessState.PROCESSING_GUESS");
 
-        require(currWordListForUser[msg.sender].length == 1 || randomNumberRequestStateForUser[msg.sender] == RandomNumberRequestState.FULFILLED, "Error: Not received VRF Random Number");
+        uint currWordListLength = currWordListForUser[msg.sender].length;
+
+        require(currWordListLength == 1 || randomNumberRequestStateForUser[msg.sender] == RandomNumberRequestState.FULFILLED, "Error: Not received VRF Random Number");
 
         guessState[msg.sender] = UserGuessState.AWAITING_GUESS;
         if(randomNumberRequestStateForUser[msg.sender] == RandomNumberRequestState.FULFILLED){
@@ -255,10 +258,10 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         string memory guessedWordString = userGuesses[msg.sender][numberOfGuesses[msg.sender]];
 
         string memory targetWord;
-        if(currWordListForUser[msg.sender].length == 1){
+        if(currWordListLength == 1){
             targetWord = currWordListForUser[msg.sender][0];
         } else {
-            targetWord = currWordListForUser[msg.sender][vrfAddressToRandomNumber[msg.sender]%currWordListForUser[msg.sender].length];
+            targetWord = currWordListForUser[msg.sender][vrfAddressToRandomNumber[msg.sender]%currWordListLength];
         }
 
         result = getWordleComparison(targetWord, guessedWordString);
@@ -269,25 +272,18 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
             solved[msg.sender] = true;
             solvedCountByGuesses[numberOfGuesses[msg.sender]]++;
         } else {
-            string[] memory newWordListTemp = new string[](currWordListForUser[msg.sender].length);
-            uint numberOfNewWords = 0;
-            // create an array, and then trim it
-            for(uint i=0;i<currWordListForUser[msg.sender].length;i++){
-                if(isSameWordleResult(getWordleComparison(currWordListForUser[msg.sender][i], guessedWordString),result)){
-                    newWordListTemp[numberOfNewWords] = currWordListForUser[msg.sender][i];
-                    numberOfNewWords++;
+            uint i=0;
+            while(i<currWordListForUser[msg.sender].length){
+                if(isSameWordleResult(guessedWordString, currWordListForUser[msg.sender][i], result)){
+                    i++;
+                } else {
+                    currWordListForUser[msg.sender][i] = currWordListForUser[msg.sender][currWordListForUser[msg.sender].length-1];
+                    currWordListForUser[msg.sender].pop();
                 }
             }
-
-            string[] memory newWordList = new string[](numberOfNewWords);
-            for(uint i=0;i<numberOfNewWords;i++){
-                newWordList[i]=newWordListTemp[i];
-            }
-
-            currWordListForUser[msg.sender] = newWordList;
         }
 
-        vrfAddressToRandomNumber[msg.sender]=0;
+        delete vrfAddressToRandomNumber[msg.sender];
 
         emit GetGuessResult(getCompletedGameCount(), msg.sender);
 
@@ -338,7 +334,9 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         // create shares
         uint eligiblePlayersCount = 0;
 
-        for(uint i=0;i<playersList.length;i++){
+        uint playersListLength = playersList.length;
+
+        for(uint i=0;i<playersListLength;i++){
             if(enabled[playersList[i]] && solved[playersList[i]]){
                 eligiblePlayersCount++;
             }
@@ -349,7 +347,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
         uint j=0;
 
-        for(uint i=0;i<playersList.length;i++){
+        for(uint i=0;i<playersListLength;i++){
             if(enabled[playersList[i]] && solved[playersList[i]]){
                 eligiblePlayers[j]=playersList[i];
                 eligiblePlayerShares[j]=(payouts[numberOfGuesses[playersList[i]]]);
@@ -364,7 +362,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         }
 
         // finally, reset all players state and remove from playersList
-        for(uint i=0;i<playersList.length;i++){
+        for(uint i=0;i<playersListLength;i++){
             resetSingleUser(playersList[i]);
         }
         delete playersList;
@@ -382,59 +380,25 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     }
 
     function resetSingleUser(address userAddress) internal {
-        enabled[userAddress] = false;
-        numberOfGuesses[userAddress] = 0;
-        solved[userAddress] = false;
-        guessState[userAddress] = UserGuessState.AWAITING_GUESS;
+        delete enabled[userAddress];
+        delete numberOfGuesses[userAddress];
+        delete solved[userAddress];
+        delete guessState[userAddress];
         delete guessStore[userAddress];
         delete currWordListForUser[userAddress];
-    }
-
-
-    function isSameWordleResult(WordleResult[5] memory a, WordleResult[5] memory b) private pure returns (bool){
-        for(uint i=0;i<5;i++){
-            if(a[i]!=b[i])return false;
-        }
-        return true;
-    }
-
-    function isValidWord(string calldata guessedWordString) internal view returns (bool){
-        if(bytes(guessedWordString).length != 5){
-            return false;
-        }
-        for(uint i=0;i<5;i++){
-            if(getIntegerIndex(bytes(guessedWordString)[i])>25){
-                return false;
-            }
-        }
-        return allowedWords[guessedWordString];
-    }
-
-    function isAllGreen(WordleResult[5] memory guess) internal pure returns (bool) {
-        return (guess[0]==WordleResult.GREEN && guess[1]==WordleResult.GREEN && guess[2]==WordleResult.GREEN && guess[3]==WordleResult.GREEN && guess[4]==WordleResult.GREEN);
-    }
-
-    function getIntegerIndex(bytes1 char) pure internal returns (uint8) {
-        if(uint8(bytes1("A")) > uint8(char)){
-            return 255;
-        }
-        return uint8(char) - uint8(bytes1("A"));
+        delete randomNumberRequestStateForUser[userAddress];
     }
 
     function getWordleComparison(string memory targetWordString, string memory guessedWordString) internal view returns (WordleResult[5] memory){
 
-        int[26] memory letterCounts;
+        uint[26] memory letterCounts;
         bytes memory targetWord = bytes(targetWordString);
         bytes memory guessedWord = bytes(guessedWordString);
-        for(uint i=0;i<26;i++){
-            letterCounts[getIntegerIndex(bytes(allChars)[i])]=0;
-        }
 
-        WordleResult[5] memory result = [WordleResult.GREY,WordleResult.GREY,WordleResult.GREY,WordleResult.GREY,WordleResult.GREY];
+        WordleResult[5] memory result;
 
         for(uint i=0;i<5;i++){
             letterCounts[getIntegerIndex(targetWord[i])]++;
-            result[i]=WordleResult.GREY;
         }
 
         for(uint i=0;i<5;i++){
@@ -453,4 +417,47 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         }
         return result;
     }
+
+
+    function isSameWordleResult(string memory guessedWordString, string memory targetWordString, WordleResult[5] memory expectedResult) private view returns (bool){
+
+        bytes memory targetWord = bytes(targetWordString);
+        bytes memory guessedWord = bytes(guessedWordString);
+
+        for(uint i=0;i<5;i++){
+            if((expectedResult[i] == WordleResult.GREEN) != (guessedWord[i]==targetWord[i]))return false;
+        }
+
+        uint[26] memory letterCounts;
+
+        for(uint i=0;i<5;i++){
+            if(targetWord[i]!=guessedWord[i]){
+                letterCounts[getIntegerIndex(targetWord[i])]++;
+            }
+        }
+
+        for(uint i=0;i<5;i++){
+            if(targetWord[i]==guessedWord[i])continue;
+            if(letterCounts[getIntegerIndex(guessedWord[i])]>0){
+                if(expectedResult[i] != WordleResult.YELLOW) return false;
+                letterCounts[getIntegerIndex(guessedWord[i])]--;
+            } else {
+                if(expectedResult[i] != WordleResult.GREY) return false;
+            }
+        }
+        return true;
+    }
+
+    function isValidWord(string calldata guessedWordString) internal view returns (bool){
+        return allowedWords[guessedWordString];
+    }
+
+    function isAllGreen(WordleResult[5] memory guess) internal pure returns (bool) {
+        return (guess[0]==WordleResult.GREEN && guess[1]==WordleResult.GREEN && guess[2]==WordleResult.GREEN && guess[3]==WordleResult.GREEN && guess[4]==WordleResult.GREEN);
+    }
+
+    function getIntegerIndex(bytes1 char) pure internal returns (uint) {
+        return uint(uint8(char) - uint8(bytes1("A")));
+    }
+
 }
