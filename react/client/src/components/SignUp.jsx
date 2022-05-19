@@ -4,6 +4,7 @@ import CryptleLogo from './CryptleLogo';
 import AppContext from '../contexts/AppContext';
 import Header from "./Header";
 import Loading from "./Loading";
+import Payout from "./Payout";
 
 const SignUp = () => {
     const context = useContext(AppContext);
@@ -14,6 +15,7 @@ const SignUp = () => {
             <Header />
             <CryptleLogo />
             <br/>
+            <Payout/>
             <button id={'signup-button'} onClick={() => wordleInterface.signUp()}>
                 <span id={'signup-button-arrow'}>&rarr;</span>
             </button>

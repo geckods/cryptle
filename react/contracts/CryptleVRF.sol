@@ -380,6 +380,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         if(eligiblePlayersCount>0){
             paymentSplitterAddress = new PaymentSplitter(eligiblePlayers, eligiblePlayerShares);
             payable(paymentSplitterAddress).transfer(address(this).balance);
+            pastGamePaymentSplitters.push(address(paymentSplitterAddress));
         }
 
         // finally, reset all players state and remove from playersList
@@ -395,7 +396,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
         emit PayoutAndReset(getCompletedGameCount(), address(paymentSplitterAddress));
 
-        pastGamePaymentSplitters.push(address(paymentSplitterAddress));
+
 
         return paymentSplitterAddress;
     }

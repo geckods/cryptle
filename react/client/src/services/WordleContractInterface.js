@@ -76,7 +76,7 @@ export class WordleContractInterface {
                 userGuessState: Number(userGuessState),
                 guesses:guesses,
                 results:results,
-                currGameState
+                currGameState:currGameState
         }
 
         console.log(userObject);
@@ -105,29 +105,16 @@ export class WordleContractInterface {
         return tx;
     };
 
-    withdrawFunds = async () => {
-        const tx = await this.wordleContract.methods.pastGamePaymentSplitters().call({from: this.account});
-        if (tx && tx.length > 0) {
-            const paymentSplitterAddress = tx[tx.length-1];
-            
-            let contractArtifact
-            try {
-                contractArtifact = await import(`../artifacts/contracts/dependencies/OpenZeppelin/openzeppelin-contracts@4.5.0/PaymentSplitter.json`);
-            } catch (e) {
-                console.log(`Failed to load payment splitter contract artifact`);
-                return 0
-            }
-
-            const paymetSplitter = new this.web3.eth.Contract(contractArtifact.abi, paymentSplitterAddress);
-            const tx = await paymetSplitter.methods.release(this.account).send({from: this.account});
-            if (tx) {
-                return 1;
-            }
-            return 0;
-        } else {
-            return 0;
-        }
+    getAccountBalance = async () => {
+        const tx = await this.wordleContract.methods.getOutstandingBalance().call({from: this.account});
+        return tx;
     };
+
+    withdrawOutstandingBalance = async () => {
+        const tx = await this.wordleContract.methods.receiveOutstandingBalance().send({from: this.account});
+        return tx;
+    };
+
 }
 
 export default WordleContractInterface;
