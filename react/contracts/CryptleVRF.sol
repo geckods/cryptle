@@ -185,7 +185,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         uint balance = 0;
         for(uint i=0;i<pastGamePaymentSplitters.length;i++){
             PaymentSplitter paymentSplitter = PaymentSplitter(payable(pastGamePaymentSplitters[i]));
-            balance += (pastGamePaymentSplitters[i].balance*paymentSplitter.shares(msg.sender))/paymentSplitter.totalShares();
+            balance += ((pastGamePaymentSplitters[i].balance + paymentSplitter.totalReleased())*paymentSplitter.shares(msg.sender))/paymentSplitter.totalShares();
         }
         return balance;
     }
