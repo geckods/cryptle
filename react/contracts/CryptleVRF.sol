@@ -39,7 +39,9 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     // see https://docs.chain.link/docs/vrf-contracts/#configurations
     // Mumbai : 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f
     // Rinkeby : 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc
-    bytes32 public keyHash = 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;
+    // BSC test: 0xd4bb89654db74673a187bd804519e65e3f71a52bc55f11da7601a13dcf505314
+    // AVAX TEST: 0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61
+    bytes32 public keyHash = 0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61;
     function setKeyHash(bytes32 newKeyHash) onlyOwner public {
         keyHash = newKeyHash;
     }
@@ -177,6 +179,25 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         }
         emit AppendToAllowedGuessWordList(getCompletedGameCount());
     }
+
+
+    function getOutstandingBalance() public view returns(uint) {
+        uint balance = 0;
+        for(uint i=0;i<pastGamePaymentSplitters.length;i++){
+            PaymentSplitter paymentSplitter = PaymentSplitter(payable(pastGamePaymentSplitters[i]));
+            balance += (pastGamePaymentSplitters[i].balance*paymentSplitter.shares(msg.sender))/paymentSplitter.totalShares();
+        }
+        return balance;
+    }
+
+    function receiveOutstandingBalance() public {
+        uint balance = 0;
+        for(uint i=0;i<pastGamePaymentSplitters.length;i++){
+            PaymentSplitter paymentSplitter = PaymentSplitter(payable(pastGamePaymentSplitters[i]));
+            paymentSplitter.release(payable(msg.sender));
+        }
+    }
+
 
     event InitGame(uint indexed currentGameNumber);
     function initGame() onlyOwner public {

@@ -436,3 +436,24 @@ def test_basic_game_4_player_one_guy_didnt_solve(wordle_4_player_signup_test_mod
 
     for i in range(1, 4):
         assert accounts[i].balance() > accounts[i + 1].balance()
+
+@pytest.mark.require_network("development")
+def test_repeated_games(wordle_4_player_signup_test_mode):
+    wordle, vrfCoordinatorV2Mock = wordle_4_player_signup_test_mode
+    global testGuessNumber
+    testGuessNumber = 1
+
+    setupSolver(wordle, vrfCoordinatorV2Mock, accounts[1:4], [3, 4, 5])
+    wordle.payoutAndReset()
+    wordle.initGame()
+    for account in accounts[1:4]:
+        wordle.signUp({'from':account, 'value':'0.1 ether'})
+    setupSolver(wordle, vrfCoordinatorV2Mock, accounts[1:4], [1, 5, 6])
+
+    assert [2262857142857142857,1131428571428571428,565714285714285714] == ([wordle.getOutstandingBalance({'from':account}) for account in accounts[1:4]])
+    for account in accounts[1:4]:
+        wordle.receiveOutstandingBalance({'from':account})
+    assert [(98900000000000000000 + 2262857142857142857), (98900000000000000000 + 1131428571428571428),
+            (98900000000000000000 + 565714285714285714)] == (
+           [account.balance() for account in accounts[1:4]])
+    assert accounts[0].balance() == 100040000000000000000
