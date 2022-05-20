@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import WordleGrid from './WordleGrid';
 import AppContext from '../contexts/AppContext';
 import { isValidGuess } from '../utils/WordleUtils';
-import Header from "./Header";
 import Payout from "./Payout";
+import RICIBs from 'react-individual-character-input-boxes';
 
 const Play = () => {
     const context = useContext(AppContext);
@@ -17,6 +17,7 @@ const Play = () => {
 
     const [guessing, setGuessing] = useState(player.userGuessState);
     const [guess, setGuess] = useState('');
+    const [cool, setCool] = useState('');
 
     const isGameComplete = async () => {
         const guessCount = context.getPlayer().results.length;
@@ -73,19 +74,17 @@ const Play = () => {
     return (
         
         (complete) ?
-        <div>
-            <Header />
+        <div className='half-width'>
             <WordleGrid guesses={player.guesses} results={player.results} />
             <br/>
             <Payout/>
         </div> :
-        <div>
-            <Header />
+        <div className='half-width'>
             {
             (!guessing) ?
-            <div>
+            <div className='full-width'>
                 <WordleGrid guesses={player.guesses} results={player.results} />
-                <input
+                {/* <input
                     id='guess-string'
                     maxLength={5}
                     minLength={5}
@@ -93,11 +92,29 @@ const Play = () => {
                     onChange={(event) => {
                         setGuess(event.currentTarget.value);
                     }}
-                />
+                /> */}
+                <div className='separator'></div>
+                <div>
+                    <RICIBs
+                    amount={5}
+                    autoFocus
+                    handleOutputString={(event) => {
+                        setGuess(event);
+                    }}
+                    inputProps={[
+                        {className: 'guess-input'},
+                        {className: 'guess-input'},
+                        {className: 'guess-input'},
+                        {className: 'guess-input'},
+                        {className: 'guess-input'}
+                    ]}
+                    inputRegExp={/^[a-zA-Z]$/}
+                    />
+                </div>
                 <br/>
-                <button onClick={() => makeGuess()}>Submit Guess</button>
+                <button id={'make-guess'} onClick={() => makeGuess()}>Submit Guess</button>
             </div>:
-            <div>
+            <div className='full-width'>
                 Guessing ...
                 <WordleGrid guesses={player.guesses} results={player.results} />
             </div>

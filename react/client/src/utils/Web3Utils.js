@@ -28,3 +28,22 @@ export const loadContract = async (chain, contractName, web3) => {
 
     return new web3.eth.Contract(contractArtifact.abi, address)
 };
+
+export const getChainFromChainId = (chainId) => {
+    switch (Number(chainId)) {
+        case 1:
+            return 'Ethereum';
+        case 4:
+            return 'Rinkeby';
+        case 137:
+            return 'Polygon';
+        case 8001:
+            return 'Polygon-Mumbai';
+        case 43114:
+            return 'Avalanche-C';
+        case 43113:
+            return 'Avalanche-Fuji';
+        default:
+            return 'Unknown';
+    }
+};
