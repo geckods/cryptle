@@ -4,10 +4,6 @@ import WordleGridRow from "./WordleGridRow";
 const WordleGrid = (props) => {
     const { guesses, results } = props;
 
-    console.log('Inside WordleGrid');
-    console.log(guesses);
-    console.log(results);
-
     const keys = [0, 1, 2, 3, 4, 5];
 
     return (

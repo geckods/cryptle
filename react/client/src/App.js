@@ -42,9 +42,9 @@ const App = () =>{
         getPlayer: () => {
             return state.player
         },
-        setPlayer: (player) => {
+        setPlayer: (player1) => {
             setState({
-                ...state, player: player
+                ...state, player: player1
             })
         }
     };

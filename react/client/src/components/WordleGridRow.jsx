@@ -3,15 +3,11 @@ import { guessResultCharacterClass } from "../constants/Constants";
 
 const WordleGridRow = (props) => {
     const { guess, result, id } = props;
-    console.log('ROW: ' + id + ' Guess: ' + guess);
-    console.log('ROW: ' + id + ' Result: ' + result);
 
     let classNames = [];
-
     for(let i=0; i<5; i++) {
-        classNames.push(guessResultCharacterClass[(result !== null) ? result[i] : 3])
+        classNames.push(guessResultCharacterClass[(result != null) ? result[i] : 3])
     }
-    console.log(classNames);
 
     if (guess) {
         return (

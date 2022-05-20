@@ -54,7 +54,7 @@ export class WordleContractInterface {
         let results = [];
 
         for(let i=0;i<=numberOfGuesses;i++){
-            if(i!=numberOfGuesses || userGuessState === 1){
+            if(i!=Number(numberOfGuesses) || Number(userGuessState) === 1){
                 const guess = await this.wordleContract.methods.userGuesses(this.account, i).call();
                 guesses.push(guess);
             }

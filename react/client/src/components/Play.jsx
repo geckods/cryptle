@@ -11,13 +11,10 @@ const Play = () => {
 
     const [player, setPlayer] = useState(context.getPlayer());
 
-    console.log('AAA');
-    console.log(player);
+    const [gettingGuessResult, setGettingGuessResult] = useState(player.userGuessState);
+    const [guessing, setGuessing] = useState(false);
 
-
-    const [guessing, setGuessing] = useState(player.userGuessState);
     const [guess, setGuess] = useState('');
-    const [cool, setCool] = useState('');
 
     const isGameComplete = async () => {
         const guessCount = context.getPlayer().results.length;
@@ -25,10 +22,8 @@ const Play = () => {
         return isSolved || (guessCount === 6 && context.getPlayer().userGuessState == 0);
     };
 
-
     const [loading, setLoading] = useState(1);
     const [complete, setComplete] = useState(-1);
-
 
     useEffect(() => {
         isGameComplete().then((result) => {
@@ -36,10 +31,11 @@ const Play = () => {
             setLoading(0);
         })
 
-        if(guessing){
+        if(!guessing && Number(gettingGuessResult)){
             wordleInterface.pollGuessResult().then((result) => {
                 wordleInterface.getPlayerState().then((player) => {
                     context.setPlayer(player);
+                    window.location.reload(false);
                 });
             });
         }
@@ -51,6 +47,7 @@ const Play = () => {
             setGuessing(true);
             wordleInterface.makeGuess(guess).then((tx) => {
                 console.log(tx);
+                window.location.reload(false);
             }).catch((e) => {
                 console.log('error');
                 console.log(e);
@@ -61,18 +58,23 @@ const Play = () => {
         }
     };
 
-    const widthdrawFunds = () => {
-        wordleInterface.widthdrawFunds().then((tx) => {
-            console.log(tx);
-            alert('Success');
-        }).catch((e) => {
-            console.log(e);
-            alert('Fail');
-        });
-    }
+    const GettingResultState = () => {
+        return (
+            <div className='full-width'>
+                <button id={'make-guess'} disabled>Getting Result ...</button>
+            </div>
+        );
+    };
+
+    const MakingGuessState = () => {
+        return (
+            <div className='full-width'>
+                <button id={'make-guess'} disabled>Guessing ...</button>
+            </div>
+        );
+    };
     
     return (
-        
         (complete) ?
         <div className='half-width'>
             <WordleGrid guesses={player.guesses} results={player.results} />
@@ -80,26 +82,21 @@ const Play = () => {
             <Payout/>
         </div> :
         <div className='half-width'>
-            {
-            (!guessing) ?
             <div className='full-width'>
                 <WordleGrid guesses={player.guesses} results={player.results} />
-                {/* <input
-                    id='guess-string'
-                    maxLength={5}
-                    minLength={5}
-                    value={guess}
-                    onChange={(event) => {
-                        setGuess(event.currentTarget.value);
-                    }}
-                /> */}
                 <div className='separator'></div>
+            </div>
+            {
+            (guessing) ?
+                <MakingGuessState />:
+                (Number(player.userGuessState)) ?
+                <GettingResultState />:
                 <div>
                     <RICIBs
                     amount={5}
                     autoFocus
-                    handleOutputString={(event) => {
-                        setGuess(event);
+                    handleOutputString={(guessString) => {
+                        setGuess(guessString.toUpperCase());
                     }}
                     inputProps={[
                         {className: 'guess-input'},
@@ -110,14 +107,10 @@ const Play = () => {
                     ]}
                     inputRegExp={/^[a-zA-Z]$/}
                     />
+                    <br/>
+                    <button id={'make-guess'} onClick={() => makeGuess()}>Submit Guess</button>
                 </div>
-                <br/>
-                <button id={'make-guess'} onClick={() => makeGuess()}>Submit Guess</button>
-            </div>:
-            <div className='full-width'>
-                Guessing ...
-                <WordleGrid guesses={player.guesses} results={player.results} />
-            </div>
+                
             }
         </div>
         

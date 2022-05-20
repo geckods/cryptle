@@ -8,12 +8,9 @@ import Header from './Header';
 import CryptleLogo from './CryptleLogo';
 
 function Main() {
-
-  console.log("We are in main");
   const context = useContext(AppContext);
   const enabled = context.getPlayer().enabled;
   const gameState = Number(context.getPlayer().currGameState);
-  console.log(gameState);
 
   return (
     <div className="App">
