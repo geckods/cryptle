@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "ganache": "^7.0.5"
+    "ganache": "^7.0.5",
+    "gh-pages": "^4.0.0"
   }
 }
