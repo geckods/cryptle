@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/cryptle/static/css/main.de73d356.chunk.css",
+    "main.js": "/cryptle/static/js/main.946bb498.chunk.js",
+    "main.js.map": "/cryptle/static/js/main.946bb498.chunk.js.map",
+    "runtime-main.js": "/cryptle/static/js/runtime-main.3aa5674d.js",
+    "runtime-main.js.map": "/cryptle/static/js/runtime-main.3aa5674d.js.map",
+    "static/js/2.7c2e53d4.chunk.js": "/cryptle/static/js/2.7c2e53d4.chunk.js",
+    "static/js/2.7c2e53d4.chunk.js.map": "/cryptle/static/js/2.7c2e53d4.chunk.js.map",
+    "static/js/3.3a9a251a.chunk.js": "/cryptle/static/js/3.3a9a251a.chunk.js",
+    "static/js/3.3a9a251a.chunk.js.map": "/cryptle/static/js/3.3a9a251a.chunk.js.map",
+    "index.html": "/cryptle/index.html",
+    "precache-manifest.29a41931ffb7ef23e28fd214abfece73.js": "/cryptle/precache-manifest.29a41931ffb7ef23e28fd214abfece73.js",
+    "service-worker.js": "/cryptle/service-worker.js",
+    "static/css/main.de73d356.chunk.css.map": "/cryptle/static/css/main.de73d356.chunk.css.map",
+    "static/js/2.7c2e53d4.chunk.js.LICENSE.txt": "/cryptle/static/js/2.7c2e53d4.chunk.js.LICENSE.txt",
+    "static/media/App.css": "/cryptle/static/media/VCR_OSD_MONO.5fcd6c65.ttf"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3aa5674d.js",
+    "static/js/2.7c2e53d4.chunk.js",
+    "static/css/main.de73d356.chunk.css",
+    "static/js/main.946bb498.chunk.js"
+  ]
+}
