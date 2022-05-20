@@ -100,14 +100,24 @@ table {
   font-weight: bold;
 }
 
-#signup-button, #make-guess {
+#signup-button {
   font-family: nunito;
   color: white;
   background-color: #282c34;
   border: none;
   border-radius: 3px;
   padding: 0.2em;
-  width: 100px;
+  width: 150px;
+}
+
+#make-guess {
+  font-family: nunito;
+  color: white;
+  background-color: #282c34;
+  border: none;
+  border-radius: 3px;
+  padding: 0.2em;
+  width: 150px;
 }
 
 button:hover {
