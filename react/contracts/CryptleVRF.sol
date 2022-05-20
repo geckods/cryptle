@@ -103,6 +103,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
     string[] private targetWordList;
     mapping(string => bool) private allowedWords;
+    uint public allowedWordsSize;
 
     // overall aggregation objects
     uint[7] public solvedCountByGuesses;
@@ -168,16 +169,21 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         emit AppendToTargetWordList(getCompletedGameCount(), originalTargetWordListLength, targetWordList.length);
     }
 
-    event AppendToAllowedGuessWordList(uint indexed currentGameNumber); //todo: track the size of the AllowedGuessWordList
+    event AppendToAllowedGuessWordList(uint indexed currentGameNumber, uint originalAllowedGuessesWordListLength, uint updatedAllowedGuessesWordListLength);
     function appendToAllowedGuessesWordList(address[] calldata allowedGuessesWordListContractAddresses) onlyOwner public {
         uint allowedGuessesWordListContractAddressesLength = allowedGuessesWordListContractAddresses.length;
+        uint allowedWordsAdded = 0;
         for(uint addressNumber = 0; addressNumber<allowedGuessesWordListContractAddressesLength;addressNumber++){
             wl = WordList(allowedGuessesWordListContractAddresses[addressNumber]);
             for(uint i=0;i<wl.getWordListLength();i++){
-                allowedWords[wl.wordList(i)]=true;
+                if(!allowedWords[wl.wordList(i)]){
+                    allowedWordsAdded++;
+                    allowedWords[wl.wordList(i)]=true;
+                }
             }
         }
-        emit AppendToAllowedGuessWordList(getCompletedGameCount());
+        emit AppendToAllowedGuessWordList(getCompletedGameCount(), allowedWordsSize, allowedWordsSize+allowedWordsAdded);
+        allowedWordsSize+=allowedWordsAdded;
     }
 
 
@@ -185,7 +191,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         uint balance = 0;
         for(uint i=0;i<pastGamePaymentSplitters.length;i++){
             PaymentSplitter paymentSplitter = PaymentSplitter(payable(pastGamePaymentSplitters[i]));
-            balance += ((pastGamePaymentSplitters[i].balance + paymentSplitter.totalReleased())*paymentSplitter.shares(msg.sender))/paymentSplitter.totalShares();
+            balance += ((pastGamePaymentSplitters[i].balance + paymentSplitter.totalReleased())*paymentSplitter.shares(msg.sender))/paymentSplitter.totalShares() - paymentSplitter.released(msg.sender);
         }
         return balance;
     }
@@ -202,6 +208,8 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     event InitGame(uint indexed currentGameNumber);
     function initGame() onlyOwner public {
         require(currGameState == GameState.PENDING, "Error: EXPECTED GameState.PENDING");
+        require(allowedWordsSize > 0, "Error: EXPECTED allowedWordsSize > 0");
+        require(targetWordList.length > 0, "Error: EXPECTED targetWordList.length > 0");
         currGameState = GameState.IN_PROGRESS;
         emit InitGame(getCompletedGameCount());
     }

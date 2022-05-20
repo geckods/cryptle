@@ -44,4 +44,4 @@ compiler:
       - "@chainlink=smartcontractkit/chainlink@1.2.1"
     optimizer:
       enabled: true
-      runs: 10000
+      runs: 5000
