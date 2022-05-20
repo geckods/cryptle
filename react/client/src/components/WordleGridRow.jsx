@@ -3,25 +3,28 @@ import { guessResultCharacterClass } from "../constants/Constants";
 
 const WordleGridRow = (props) => {
     const { guess, result, id } = props;
-    console.log('ROW: ' + id + ' Guess: ' + guess);
-    console.log('ROW: ' + id + ' Result: ' + result);
+
+    let classNames = [];
+    for(let i=0; i<5; i++) {
+        classNames.push(guessResultCharacterClass[(result != null) ? result[i] : 3])
+    }
 
     if (guess) {
         return (
             <tr>
-                <td className={guessResultCharacterClass[result ? result[0]:3]}>
+                <td className={classNames[0]}>
                     {guess[0]}
                 </td>
-                <td className={guessResultCharacterClass[result ? result[1]:3]}>
+                <td className={classNames[1]}>
                     {guess[1]}
                 </td>
-                <td className={guessResultCharacterClass[result ? result[2]:3]}>
+                <td className={classNames[2]}>
                     {guess[2]}
                 </td>
-                <td className={guessResultCharacterClass[result ? result[3]:3]}>
+                <td className={classNames[3]}>
                     {guess[3]}
                 </td>
-                <td className={guessResultCharacterClass[result ? result[4]:3]}>
+                <td className={classNames[4]}>
                     {guess[4]}
                 </td>
             </tr>
@@ -30,11 +33,11 @@ const WordleGridRow = (props) => {
 
     return (
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td className="white-cell"></td>
+            <td className="white-cell"></td>
+            <td className="white-cell"></td>
+            <td className="white-cell"></td>
+            <td className="white-cell"></td>
         </tr>
     )
 };

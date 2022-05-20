@@ -3,13 +3,23 @@
   src: url('fonts/VCR_OSD_MONO.ttf');
 }
 
+@font-face {
+  font-family: nunito;
+  src: url('fonts/Nunito.ttf');
+}
+
 
 .App {
   text-align: center;
   display: flex;
-  height: 100vh;
-  width: 100vw;
-  border: 1px solid red;
+  justify-content: center;
+  height: 99vh;
+  width: 99vw;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-family: nunito !important;
 }
 
 .App-logo {
@@ -52,13 +62,14 @@ td {
   border-radius: 3px;
   height: 30px;
   width: 30px;
-  border: 1px solid gray;
+  border: none;
+  font-weight: 400;
 }
 
 table {
   margin-left: auto;
   margin-right: auto;
-  font-family: font;
+  font-family: nunito;
   border: none;
 }
 
@@ -74,29 +85,57 @@ table {
   background-color: lightgray;
 }
 
+.white-cell {
+  border: 1px solid lightgray !important;
+  background-color: azure;
+}
+
 #cryptle-logo-container td {
-  font-family: font !important;
+  font-family: nunito;
   border: none;
   width: 50px;
   height: 50px;
   border-radius: 5px;
   font-family: 1.2em;
+  font-weight: bold;
 }
 
-#signup-button {
+#signup-button, #make-guess {
+  font-family: nunito;
+  color: white;
+  background-color: #282c34;
   border: none;
-  background: none;
-  font-family: font;
-  color: gray;
+  border-radius: 3px;
+  padding: 0.2em;
+  width: 100px;
 }
 
-#signup-button-arrow {
-  font-size: 3em;
-  color: lightseagreen;
-}
-
-#signup-button:hover {
+button:hover {
   opacity: 0.6;
+}
+
+#payout {
+  text-align: left;
+  padding: 1em;
+  border-radius: 10px;
+  border: 1px solid #282c34;
+  max-width: 50vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#withdraw {
+  width: 100%;
+  background-color: #282c34;
+  color: white;
+  border: none;
+  padding: 0.2em;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#withdraw:hover {
+  opacity: 0.8;
 }
 
 #loading {
@@ -105,4 +144,92 @@ table {
   justify-content: center;
   height: 90vh;
   width: 90vw;
+}
+
+#balance-container {
+  width: 50%;
+}
+
+#balance {
+  font-size: 2em;
+  font-weight: 400;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+header {
+  /* border: 1px solid red; */
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  text-align: right;
+}
+
+.separator {
+  height: 1px;
+  background-color: lightgray;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+#active-account {
+  background-color: #282c34;
+  color: white;
+  margin: 0.5em;
+  padding: 0.2em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border-radius: 2px;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+#chain-id {
+  margin: 0.5em;
+  padding: 0.2em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border-radius: 2px;
+  border: 1px solid;
+  font-size: 0.8em;
+  font-weight: 700
+}
+
+.Ethereum {
+  border-color: green;
+  color: green;
+}
+
+.Rinkeby {
+  border-color: goldenrod;
+  color: goldenrod
+}
+
+.Polygon, .Polygon-Mumbai {
+  border-color: purple;
+  color: purple;
+}
+
+.Avalanche-C, .Avalanche-Fuji {
+  border-color: red;
+  color: red;
+}
+
+.guess-input {
+  font-family: nunito !important;
+  text-transform: uppercase;
 }

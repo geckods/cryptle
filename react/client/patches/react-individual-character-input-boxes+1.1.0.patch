@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-individual-character-input-boxes/dist/InputBox.js b/node_modules/react-individual-character-input-boxes/dist/InputBox.js
+index 404b81e..f0f68c3 100644
+--- a/node_modules/react-individual-character-input-boxes/dist/InputBox.js
++++ b/node_modules/react-individual-character-input-boxes/dist/InputBox.js
+@@ -16,7 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
+ function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+ 
+ function _templateObject() {
+-  var data = _taggedTemplateLiteral(["\n  justify-content: space-between;\n  width: 45px;\n  height: 45px;\n  margin: 5px;\n  border-radius: 5px;\n  text-align: center;\n  font-size: 34px;\n  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',\n    Arial sans-serif;\n"]);
++  var data = _taggedTemplateLiteral(["\n  justify-content: space-between;\n  width: 30px;\n  height: 30px;\n  margin: 5px;\n border: 1px solid #ddd;\n  border-radius: 5px;\n  text-align: center;\n  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',\n    Arial sans-serif;\n"]);
+ 
+   _templateObject = function _templateObject() {
+     return data;

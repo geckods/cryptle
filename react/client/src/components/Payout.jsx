@@ -30,14 +30,16 @@ const Payout = () => {
 
     return (
         (loading)?
-            <Loading/>
+            <div>Loading ...</div>
         :
         <div id={'payout'}>
-            <div>
-                Your balance: {balance}
+            <div id={'balance-container'}>
+                Your balance 
+                <br/>
+                <span id={'balance'}>{Number(balance)/Math.pow(10,18)}</span>
             </div>
             {
-                balance>0 && <button onClick={getFunds}>Withdraw</button>
+                balance>0 && <button id={'withdraw'} onClick={getFunds}>Withdraw</button>
             }
         </div>
     )

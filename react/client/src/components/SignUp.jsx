@@ -2,8 +2,6 @@ import React from "react";
 import { useContext } from "react";
 import CryptleLogo from './CryptleLogo';
 import AppContext from '../contexts/AppContext';
-import Header from "./Header";
-import Loading from "./Loading";
 import Payout from "./Payout";
 
 const SignUp = () => {
@@ -11,14 +9,14 @@ const SignUp = () => {
     const wordleInterface = context.getWordleInterface();
 
     return (
-        <div>
-            <Header />
+        <div className='half-width'>
             <CryptleLogo />
             <br/>
-            <Payout/>
             <button id={'signup-button'} onClick={() => wordleInterface.signUp()}>
-                <span id={'signup-button-arrow'}>&rarr;</span>
+                Play
             </button>
+            <div className={'separator'}></div>
+            <Payout/>
         </div>
     );
 };
