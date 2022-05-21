@@ -11,15 +11,19 @@ const SignUp = () => {
     const [signingUp, setSigningUp] = useState(false);
 
     const signUp = () => {
+
         setSigningUp(true);
-        wordleInterface.signUp().then((tx) => {
-            console.log(tx);
-            window.location.reload(false);
+        wordleInterface.getSignUpCost().then((tx) => {
+            wordleInterface.signUp(tx).then((tx) => {
+                window.location.reload(false);
+            })
         }).catch((e) => {
-            alert('Error');
-            console.log(e);
-            setSigningUp(false);
-        });
+                alert('Error');
+                console.log(e);
+                setSigningUp(false);
+            });
+
+
     };
 
 
@@ -29,13 +33,13 @@ const SignUp = () => {
             <br/>
             {
                 (signingUp) ?
-                <button id={'signup-button'} onClick={signUp}>
-                    Play
-                </button> :
                 <button id={'signup-button'} disabled>
                     Signing Up..
+                </button>:
+                <button id={'signup-button'} onClick={signUp}>
+                    Play
                 </button>
-            }            
+            }
             <div className={'separator'}></div>
             <Payout/>
         </div>

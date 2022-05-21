@@ -19,12 +19,15 @@ if __name__ == "__main__":
     words_with_non_zero_frequency = [x for x in words_with_frequency if x[1] > 0.0]
 
     word_list = [x[0].upper() for x in words_with_non_zero_frequency]
+    word_list.remove("NIGGA")
 
-    encoded_list_for_solidity = str(["bytes5(0x" + x.encode('utf-8').hex() + ")" for x in word_list] ).replace("'","")
+    sub_word_list = word_list[3000:4500]
+
+    encoded_list_for_solidity = str(["bytes5(0x" + x.encode('utf-8').hex() + ")" for x in sub_word_list] ).replace("'","")
 
     print(encoded_list_for_solidity)
-    print(word_list)
-    print(word_list[287])
+    print(sub_word_list)
+    print(sub_word_list[287])
 
 
-    print(len(word_list))
+    print(len(sub_word_list))

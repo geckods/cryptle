@@ -9,17 +9,20 @@ export class WordleContractInterface {
         this.account = account;
     }
 
-    signUp = () => {
-        this.wordleContract.methods.signUp().send({value: 100000000000000000, from: this.account}).then((tx) => {
-            console.log(tx);
-        }).catch((e) => {
-            console.log('error');
-            console.log(e);
-        });
+    signUp = async (signUpCost) => {
+        const tx = await this.wordleContract.methods.signUp().send({value: signUpCost, from: this.account});
+        console.log(tx);
+        return tx;
     };
 
+    getSignUpCost = async () => {
+        const tx = await this.wordleContract.methods.lotSizeInWei().call({from: this.account});
+        return tx;
+    };
+
+
     makeGuess = async (guess) => {
-        const tx = await this.wordleContract.methods.makeGuess(guess.toUpperCase()).send({from: this.account});
+        const tx = await this.wordleContract.methods.makeGuess(this.web3.utils.asciiToHex(guess.toUpperCase())).send({from: this.account});
         console.log('Make Guess Txn');
         console.log(tx);
         return tx;
@@ -32,8 +35,10 @@ export class WordleContractInterface {
         while(!resultAvailable) {
             try {
                 const tx1 = await this.getGuessResultCall();
-                result = await this.getGuessResultSend();
-                resultAvailable = 1;
+                result = await this.getGuessResultSend().then(() => {
+                    resultAvailable = 1;
+                    window.location.reload(false);
+                });
             } catch (e) {
                 await sleep(10000);
                 console.log(e);
@@ -56,7 +61,7 @@ export class WordleContractInterface {
         for(let i=0;i<=numberOfGuesses;i++){
             if(i!=Number(numberOfGuesses) || Number(userGuessState) === 1){
                 const guess = await this.wordleContract.methods.userGuesses(this.account, i).call();
-                guesses.push(guess);
+                guesses.push(this.web3.utils.hexToAscii(guess));
             }
         }
 

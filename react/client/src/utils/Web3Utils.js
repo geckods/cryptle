@@ -23,3 +23,12 @@ export const getChainFromChainId = (chainId) => {
             return 'Unknown';
     }
 };
+
+export const getContractAddressFromChainId = (chainId) => {
+    switch (Number(chainId)) {
+        case 43113:
+            return '0x5e0f37aeAaBEB5107D2cea09a04cfB3ea8eE1761';
+        default:
+            return 'NOT LIVE';
+    }
+}
