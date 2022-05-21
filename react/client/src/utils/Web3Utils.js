@@ -27,7 +27,7 @@ export const getChainFromChainId = (chainId) => {
 export const getContractAddressFromChainId = (chainId) => {
     switch (Number(chainId)) {
         case 43113:
-            return '0x5e0f37aeAaBEB5107D2cea09a04cfB3ea8eE1761';
+            return '0x0D2f237748C501725E6BE73b72135444d96BB162';
         default:
             return 'NOT LIVE';
     }
