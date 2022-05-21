@@ -1,25 +1,25 @@
 {
   "files": {
     "main.css": "/cryptle/static/css/main.427a5454.chunk.css",
-    "main.js": "/cryptle/static/js/main.8827c655.chunk.js",
-    "main.js.map": "/cryptle/static/js/main.8827c655.chunk.js.map",
-    "runtime-main.js": "/cryptle/static/js/runtime-main.4b2c1451.js",
-    "runtime-main.js.map": "/cryptle/static/js/runtime-main.4b2c1451.js.map",
+    "main.js": "/cryptle/static/js/main.32079ca0.chunk.js",
+    "main.js.map": "/cryptle/static/js/main.32079ca0.chunk.js.map",
+    "runtime-main.js": "/cryptle/static/js/runtime-main.cea2b145.js",
+    "runtime-main.js.map": "/cryptle/static/js/runtime-main.cea2b145.js.map",
     "static/js/2.c2bd9d66.chunk.js": "/cryptle/static/js/2.c2bd9d66.chunk.js",
     "static/js/2.c2bd9d66.chunk.js.map": "/cryptle/static/js/2.c2bd9d66.chunk.js.map",
-    "static/js/3.bad6274d.chunk.js": "/cryptle/static/js/3.bad6274d.chunk.js",
-    "static/js/3.bad6274d.chunk.js.map": "/cryptle/static/js/3.bad6274d.chunk.js.map",
+    "static/js/3.ba0a532d.chunk.js": "/cryptle/static/js/3.ba0a532d.chunk.js",
+    "static/js/3.ba0a532d.chunk.js.map": "/cryptle/static/js/3.ba0a532d.chunk.js.map",
     "index.html": "/cryptle/index.html",
-    "precache-manifest.130a5469cbd88473bb8d8059a369a9f9.js": "/cryptle/precache-manifest.130a5469cbd88473bb8d8059a369a9f9.js",
+    "precache-manifest.e2903066c5b2c23cfbda5535a0caff69.js": "/cryptle/precache-manifest.e2903066c5b2c23cfbda5535a0caff69.js",
     "service-worker.js": "/cryptle/service-worker.js",
     "static/css/main.427a5454.chunk.css.map": "/cryptle/static/css/main.427a5454.chunk.css.map",
     "static/js/2.c2bd9d66.chunk.js.LICENSE.txt": "/cryptle/static/js/2.c2bd9d66.chunk.js.LICENSE.txt",
     "static/media/App.css": "/cryptle/static/media/VCR_OSD_MONO.5fcd6c65.ttf"
   },
   "entrypoints": [
-    "static/js/runtime-main.4b2c1451.js",
+    "static/js/runtime-main.cea2b145.js",
     "static/js/2.c2bd9d66.chunk.js",
     "static/css/main.427a5454.chunk.css",
-    "static/js/main.8827c655.chunk.js"
+    "static/js/main.32079ca0.chunk.js"
   ]
 }
