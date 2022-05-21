@@ -20,6 +20,11 @@ export class WordleContractInterface {
         return tx;
     };
 
+    getNumPlayers = async () => {
+        const tx = await this.wordleContract.methods.getPlayerCount().call({from: this.account})
+        return tx;
+    }
+
 
     makeGuess = async (guess) => {
         const tx = await this.wordleContract.methods.makeGuess(this.web3.utils.asciiToHex(guess.toUpperCase())).send({from: this.account});
