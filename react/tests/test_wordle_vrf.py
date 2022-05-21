@@ -448,6 +448,25 @@ def test_basic_game_4_player_one_guy_didnt_solve(wordle_4_player_signup_test_mod
         assert accounts[i].balance() > accounts[i + 1].balance()
 
 @pytest.mark.require_network("development")
+def test_outstanding_balance(wordle_4_player_signup_test_mode):
+    wordle, vrfCoordinatorV2Mock = wordle_4_player_signup_test_mode
+    global testGuessNumber
+    testGuessNumber = 1
+
+    setupSolver(wordle, vrfCoordinatorV2Mock, accounts[1:4], [3, 4, 5])
+    wordle.payoutAndReset()
+
+    arr = [2262857142857142857, 1131428571428571428, 565714285714285714, 0]
+    assert arr == ([wordle.getOutstandingBalance({'from': account}) for account in accounts[1:5]])
+    for idx, account in enumerate(accounts[1:5]):
+        wordle.receiveOutstandingBalance({'from': account})
+        arr[idx] = 0
+        assert arr == ([wordle.getOutstandingBalance({'from': account}) for account in accounts[1:5]])
+
+    assert [101262857142857142857, 100131428571428571428, 99565714285714285714, 99000000000000000000] == ([account.balance() for account in accounts[1:5]])
+    assert accounts[0].balance() == 100040000000000000000
+
+@pytest.mark.require_network("development")
 def test_repeated_games(wordle_4_player_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_4_player_signup_test_mode
     global testGuessNumber
@@ -455,15 +474,27 @@ def test_repeated_games(wordle_4_player_signup_test_mode):
 
     setupSolver(wordle, vrfCoordinatorV2Mock, accounts[1:4], [3, 4, 5])
     wordle.payoutAndReset()
-    wordle.initGame()
-    for account in accounts[1:4]:
-        wordle.signUp({'from':account, 'value':'0.1 ether'})
-    setupSolver(wordle, vrfCoordinatorV2Mock, accounts[1:4], [1, 5, 6])
 
-    assert [2262857142857142857,1131428571428571428,565714285714285714] == ([wordle.getOutstandingBalance({'from':account}) for account in accounts[1:4]])
-    for account in accounts[1:4]:
-        wordle.receiveOutstandingBalance({'from':account})
-    assert [(98900000000000000000 + 2262857142857142857), (98900000000000000000 + 1131428571428571428),
-            (98900000000000000000 + 565714285714285714)] == (
-           [account.balance() for account in accounts[1:4]])
+    arr = [2262857142857142857, 1131428571428571428, 565714285714285714, 0]
+    assert arr == ([wordle.getOutstandingBalance({'from': account}) for account in accounts[1:5]])
+    wordle.receiveOutstandingBalance({'from': accounts[1]})
+
+    assert [101262857142857142857, 99000000000000000000, 99000000000000000000, 99000000000000000000] == ([account.balance() for account in accounts[1:5]])
     assert accounts[0].balance() == 100040000000000000000
+
+    wordle.initGame()
+    for account in accounts[1:5]:
+        wordle.signUp({'from':account, 'value':'1 ether'})
+    setupSolver(wordle, vrfCoordinatorV2Mock, accounts[1:5], [1, 2, 5, 6])
+    wordle.payoutAndReset()
+
+    arr = [2538461538461538461, 2400659340659340658, 692637362637362637, 25384615384615384]
+    assert arr == ([wordle.getOutstandingBalance({'from': account}) for account in accounts[1:5]])
+
+    for idx, account in enumerate(accounts[1:5]):
+        wordle.receiveOutstandingBalance({'from': account})
+        arr[idx] = 0
+        assert arr == ([wordle.getOutstandingBalance({'from': account}) for account in accounts[1:5]])
+
+    assert [102801318681318681318, 100400659340659340658, 98692637362637362637, 98025384615384615384] == ([account.balance() for account in accounts[1:5]])
+    assert accounts[0].balance() == 100080000000000000000

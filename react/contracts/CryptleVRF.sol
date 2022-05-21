@@ -194,7 +194,10 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         uint balance = 0;
         for(uint i=0;i<pastGamePaymentSplitters.length;i++){
             PaymentSplitter paymentSplitter = PaymentSplitter(payable(pastGamePaymentSplitters[i]));
-            paymentSplitter.release(payable(msg.sender));
+            try paymentSplitter.release(payable(msg.sender)) {
+            } catch {
+            }
+
         }
     }
 
@@ -360,7 +363,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         uint playersListLength = playersList.length;
 
         for(uint i=0;i<playersListLength;i++){
-            if(enabled[playersList[i]] && solved[playersList[i]]){
+            if(solved[playersList[i]]){
                 eligiblePlayersCount++;
             }
         }
@@ -371,7 +374,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         uint j=0;
 
         for(uint i=0;i<playersListLength;i++){
-            if(enabled[playersList[i]] && solved[playersList[i]]){
+            if(solved[playersList[i]]){
                 eligiblePlayers[j]=playersList[i];
                 eligiblePlayerShares[j]=(payouts[numberOfGuesses[playersList[i]]]);
                 j++;
@@ -387,11 +390,10 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
         // finally, reset all players state and remove from playersList
         for(uint i=0;i<playersListLength;i++){
-            resetSingleUser(playersList[i]);
+            delete enabled[playersList[i]];
         }
-        delete playersList;
 
-        // reset global data
+        delete playersList;
         delete solvedCountByGuesses;
 
         currGameState = GameState.PENDING;
