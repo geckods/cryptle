@@ -14,7 +14,7 @@ def main():
         owner = accounts[0]
 
         with open(
-                "client/src/artifacts/contracts/WordleVRF.json",
+                "/home/geckods/Blockchain/cryptle/react/client/src/artifacts/contracts/WordleVRF.json",
                 'r') as f:
             wordleAbi = json.load(f)['abi']
 
@@ -23,3 +23,9 @@ def main():
         if wordle.getPlayerCount() > 0:
             wordle.payoutAndReset({'from':owner})
             wordle.initGame({'from': owner})
+
+#             CRONTAB:
+# PRIMARY_TEST_ACCOUNT_PRIVATE_KEY=0x...
+# CURRENT_WORDLE_ADDRESS=0x...
+#
+# 59 23 * * *  cd /home/geckods/Blockchain/cryptle/react && /home/geckods/Blockchain/cryptle/env/bin/brownie run /home/geckods/Blockchain/cryptle/react/scripts/payoutResetInit.py --network avax-test
