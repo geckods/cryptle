@@ -19,8 +19,8 @@ def wordle_pre_init_test_mode(accounts, WordleVRF, word_list):
     vrfCoordinatorV2Mock.fundSubscription(1, 10000000000)
 
     wordle = accounts[0].deploy(WordleVRF, lotSize, 1, vrfCoordinatorV2Mock.address)
-    wordle.appendToTargetWordLists([word_list.address])
-    wordle.appendToAllowedGuessesWordList([word_list.address])
+    wordle.appendToTargetWordLists(word_list.address, 0, 700)
+    wordle.appendToAllowedGuessesWordList(word_list.address, 0, 700)
     return wordle, vrfCoordinatorV2Mock
 
 
@@ -74,7 +74,7 @@ def test_pending_mode(wordle_pre_init_test_mode):
         wordle.signUp({'from': accounts[1], 'amount': '2 ether'})
 
     with brownie.reverts("Error: EXPECTED GameState.IN_PROGRESS"):
-        wordle.makeGuess("HELLO", {'from': accounts[1]})
+        makeGuess(wordle, accounts[1], "HELLO")
 
     with brownie.reverts("Error: EXPECTED GameState.IN_PROGRESS"):
         wordle.payoutAndReset()
@@ -131,43 +131,38 @@ def test_cannot_sign_up_twice(wordle_single_signup_test_mode):
 def test_disallowed_guess_from_not_signed_up_user(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
     with brownie.reverts("Error: PLAYER NOT SIGNED UP"):
-        wordle.makeGuess("HELLO", {'from': accounts[2]})
+        makeGuess(wordle, accounts[2], "HELLO")
 
 
 @pytest.mark.require_network("development")
 def test_invalid_guess_wrong_length(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
     with brownie.reverts("Error: INVALID INPUT WORD"):
-        wordle.makeGuess("ABC", {'from': accounts[1]})
-
-    with brownie.reverts("Error: INVALID INPUT WORD"):
-        wordle.makeGuess("ABCDEF", {'from': accounts[1]})
+        wordle.makeGuess(brownie.convert.datatypes.HexString("ABC".encode('utf-8').hex(), "bytes5"), {'from': accounts[1]})
 
 
 @pytest.mark.require_network("development")
 def test_invalid_guess_wrong_characters(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
     with brownie.reverts("Error: INVALID INPUT WORD"):
-        wordle.makeGuess("hello", {'from': accounts[1]})
+        makeGuess(wordle, accounts[1], "hello")
 
     with brownie.reverts("Error: INVALID INPUT WORD"):
-        wordle.makeGuess("HELL0", {'from': accounts[1]})
-
+        makeGuess(wordle, accounts[1], "HELL0")
 
 @pytest.mark.require_network("development")
 def test_invalid_guess_word_not_in_words_list(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
     with brownie.reverts("Error: INVALID INPUT WORD"):
-        wordle.makeGuess("XXXXX", {'from': accounts[1]})
+        makeGuess(wordle, accounts[1], "XXXXX")
 
     with brownie.reverts("Error: INVALID INPUT WORD"):
-        wordle.makeGuess("ZDNAK", {'from': accounts[1]})
-
+        makeGuess(wordle, accounts[1], "ZDNAC")
 
 @pytest.mark.require_network("development")
 def test_cannot_get_guess_result_VRF_pending(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
-    wordle.makeGuess("ESSAY", {'from': accounts[1]})
+    makeGuess(wordle, accounts[1], "THESE")
     with brownie.reverts("Error: Not received VRF Random Number"):
         wordle.getGuessResult({'from': accounts[1]})
 
@@ -175,9 +170,9 @@ def test_cannot_get_guess_result_VRF_pending(wordle_single_signup_test_mode):
 @pytest.mark.require_network("development")
 def test_get_word_try_1(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
-    wordle.makeGuess("ESSAY", {'from': accounts[1]})
+    makeGuess(wordle, accounts[1], "TYPES")
     vrfCoordinatorV2Mock.fulfillRandomWords(1, wordle.address, 287)
-    result = wordle.getGuessResult.call({'from': accounts[1]})
+    result = getGuessResultCall(wordle, accounts[1])
     wordle.getGuessResult({'from': accounts[1]})
     assert result == (2, 2, 2, 2, 2)
 
@@ -189,26 +184,41 @@ def test_get_word_try_1(wordle_single_signup_test_mode):
 @pytest.mark.require_network("development")
 def test_get_word_try_2(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
-    wordle.makeGuess("WHICH", {'from': accounts[1]})
+    makeGuess(wordle, accounts[1], "WHICH")
     vrfCoordinatorV2Mock.fulfillRandomWords(1, wordle.address, 287)
-    result = wordle.getGuessResult.call({'from': accounts[1]})
+    result = getGuessResultCall(wordle, accounts[1])
     wordle.getGuessResult({'from': accounts[1]})
 
     assert result == (0, 0, 0, 0, 0)
     assert wordle.numberOfGuesses(accounts[1]) == 1
     assert wordle.solved(accounts[1]) is False
 
-    wordle.makeGuess("STAND", {'from': accounts[1]})
-    vrfCoordinatorV2Mock.fulfillRandomWords(2, wordle.address, 334)
-    result = wordle.getGuessResult.call({'from': accounts[1]})
+    makeGuess(wordle, accounts[1], "MEETS")
+    vrfCoordinatorV2Mock.fulfillRandomWords(2, wordle.address, 345)
+    result = getGuessResultCall(wordle, accounts[1])
     wordle.getGuessResult({'from': accounts[1]})
     assert result == (2, 2, 2, 2, 2)
     assert wordle.numberOfGuesses(accounts[1]) == 2
     assert wordle.solved(accounts[1]) is True
     assert wordle.solvedCountByGuesses(2) == 1
 
-def getIndex(str):
-    return ord(str) - ord('A')
+def brownieHexToString(brownieHex):
+    return bytes.fromhex(str(brownieHex)[2:]).decode('utf-8')
+
+def stringToBrownieHex(x):
+    return brownie.convert.datatypes.HexString(x.encode('utf-8').hex(), "bytes5")
+
+def makeGuess(wordle, account, string):
+    return wordle.makeGuess(stringToBrownieHex(string), {'from': account})
+
+def getWordListForUser(wordle, account, index):
+    return brownieHexToString(wordle.getWordListForUser(account, index, {'from':accounts[0]}))
+
+def getGuessResultCall(wordle, account):
+    return wordle.getGuessResult.call({'from':account})
+
+def getIndex(x):
+    return ord(x) - ord('A')
 
 def getWordleMatch(guessedWord, targetWord):
     letterCounts = [0]*26
@@ -245,24 +255,24 @@ def testWordListNarrowingLogic(wordle_single_signup_test_mode):
         initialWordListSize = wordle.getWordListForUserLength(accounts[1])
         initialWordList = []
         for i in range(initialWordListSize):
-            initialWordList.append(wordle.getWordListForUser(accounts[1],i))
+            initialWordList.append(getWordListForUser(wordle, accounts[1],i))
 
         guessedWord = random.choice(initialWordList)
         targetWordIndex = random.randrange(initialWordListSize)
         targetWord = initialWordList[targetWordIndex]
         expectedNewWordsList = getMatchingWordleWords(guessedWord, targetWord, initialWordList)
 
-        wordle.makeGuess(guessedWord, {'from': accounts[1]})
+        makeGuess(wordle, accounts[1], guessedWord)
         if initialWordListSize > 1:
             vrfCoordinatorV2Mock.fulfillRandomWords(testGuessNumber, wordle.address, targetWordIndex)
             testGuessNumber += 1
-        result = wordle.getGuessResult.call({'from': accounts[1]})
+        result = getGuessResultCall(wordle, accounts[1])
         wordle.getGuessResult({'from': accounts[1]})
 
         newWordListSize = wordle.getWordListForUserLength(accounts[1])
         newWordList = []
         for i in range(newWordListSize):
-            newWordList.append(wordle.getWordListForUser(accounts[1],i))
+            newWordList.append(getWordListForUser(wordle, accounts[1],i))
 
         print(initialWordList, guessedWord, targetWord, expectedNewWordsList, newWordList)
 
@@ -279,7 +289,7 @@ def test_get_word_already_guessed(wordle_single_signup_test_mode):
     wordle, vrfCoordinatorV2Mock = wordle_single_signup_test_mode
     makeGuessAndGetCorrectResult(wordle, vrfCoordinatorV2Mock, accounts[1])
     with brownie.reverts("Error: PLAYER ALREADY GUESSED THE CORRECT WORD"):
-        wordle.makeGuess("XXXXX", {'from': accounts[1]})
+        makeGuess(wordle, accounts[1], "XXXXX")
 
 
 def makeGuessAndGetCorrectResult(wordleContract, vrfCoordinatorV2MockContract, account):
@@ -287,12 +297,12 @@ def makeGuessAndGetCorrectResult(wordleContract, vrfCoordinatorV2MockContract, a
 
     wordListLength = wordleContract.getWordListForUserLength(account)
 
-    wordToGuess = wordleContract.getWordListForUser(account, 0)
-    wordleContract.makeGuess(wordToGuess, {'from': account})
+    wordToGuess = getWordListForUser(wordleContract, account, 0)
+    makeGuess(wordleContract, account, wordToGuess)
     if wordListLength > 1:
         vrfCoordinatorV2MockContract.fulfillRandomWords(testGuessNumber, wordleContract.address, 0)
         testGuessNumber += 1
-    result = wordleContract.getGuessResult.call({'from': account})
+    result = getGuessResultCall(wordleContract, account)
     wordleContract.getGuessResult({'from': account})
     return result
 
@@ -303,17 +313,17 @@ def makeGuessAndGetWrongResult(wordleContract, vrfCoordinatorV2MockContract, acc
 
     wordToGuess = 0
     if wordleContract.getWordListForUserLength(account) > 1:
-        wordToGuess = wordleContract.getWordListForUser(account, 0)
+        wordToGuess = getWordListForUser(wordleContract, account, 0)
     else:
-        if wordleContract.getWordListForUser(account, 0) != "AUDIO":
+        if getWordListForUser(wordleContract, account, 0) != "AUDIO":
             wordToGuess = "AUDIO"
         else:
             wordToGuess = "CRANE"
-    wordleContract.makeGuess(wordToGuess, {'from': account})
+    makeGuess(wordleContract, account, wordToGuess)
     if wordListLength > 1:
         vrfCoordinatorV2MockContract.fulfillRandomWords(testGuessNumber, wordleContract.address, 1)
         testGuessNumber += 1
-    result = wordleContract.getGuessResult.call({'from': account})
+    result = getGuessResultCall(wordleContract, account)
     wordleContract.getGuessResult({'from': account})
     return result
 

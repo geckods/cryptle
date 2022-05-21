@@ -7,7 +7,7 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 interface WordList {
    function getWordListLength() external view returns(uint);
-   function wordList(uint i) external view returns(string memory);
+   function wordList(uint i) external view returns(bytes5);
 }
 
 pragma solidity >=0.8.0 <0.9.0;
@@ -74,7 +74,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     mapping(address => uint) public numberOfGuesses;
     mapping(address => bool) public solved;
     mapping(address => WordleResult[5][6]) public guessStore; //multidimentional array notation is reversed for whatever reason
-    mapping(address => string[6]) public userGuesses;
+    mapping(address => bytes5[6]) public userGuesses;
     mapping(address => bool) public enabled;
 
 
@@ -84,12 +84,12 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     enum RandomNumberRequestState{NO_REQUEST, REQUESTED, FULFILLED}
     mapping(address => RandomNumberRequestState) public randomNumberRequestStateForUser;
 
-    mapping(address => string[]) private currWordListForUser;
+    mapping(address => bytes5[]) private currWordListForUser;
     function getWordListForUserLength(address a) onlyOwner public view returns(uint){
         return currWordListForUser[a].length;
     }
 
-    function getWordListForUser(address a, uint b) onlyOwner public view returns(string memory){
+    function getWordListForUser(address a, uint b) onlyOwner public view returns(bytes5){
         return currWordListForUser[a][b];
     }
 
@@ -101,8 +101,8 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     }
 
 
-    string[] private targetWordList;
-    mapping(string => bool) private allowedWords;
+    bytes5[] public targetWordList;
+    mapping(bytes5 => bool) public allowedWords;
     uint public allowedWordsSize;
 
     // overall aggregation objects
@@ -140,7 +140,6 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
     uint public lotSizeInWei;
 
-    string allChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     event ContractCreated(uint lotSizeInWei, uint64 vrfSubscriptionId, address vrfCoordinator);
     constructor(uint _lotSizeInWei, uint64 _vrfSubscriptionId, address _vrfCoordinator) VRFConsumerBaseV2(_vrfCoordinator){
@@ -156,30 +155,25 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     }
 
     event AppendToTargetWordList(uint indexed currentGameNumber, uint originalTargetWordListLength, uint updatedTargetWordListLength);
-    function appendToTargetWordLists(address[] calldata wordListContractAddresses) onlyOwner public {
+    function appendToTargetWordLists(address wordListContractAddress, uint startIndex, uint endIndex) onlyOwner public {
+        wl = WordList(wordListContractAddress);
+        require(startIndex >= 0 && endIndex >= 0 && startIndex<= wl.getWordListLength() && endIndex <= wl.getWordListLength(), "Error: WORDLIST INDEX OUT OF RANGE");
         uint originalTargetWordListLength = targetWordList.length;
-        uint wordListContractAddressesLength = wordListContractAddresses.length;
-        for(uint addressNumber = 0; addressNumber<wordListContractAddressesLength;addressNumber++){
-            wl = WordList(wordListContractAddresses[addressNumber]);
-
-            for(uint i=0;i<wl.getWordListLength();i++){
-                targetWordList.push(wl.wordList(i));
-            }
+        for(uint i=startIndex;i<endIndex;i++){
+            targetWordList.push(wl.wordList(i));
         }
         emit AppendToTargetWordList(getCompletedGameCount(), originalTargetWordListLength, targetWordList.length);
     }
 
     event AppendToAllowedGuessWordList(uint indexed currentGameNumber, uint originalAllowedGuessesWordListLength, uint updatedAllowedGuessesWordListLength);
-    function appendToAllowedGuessesWordList(address[] calldata allowedGuessesWordListContractAddresses) onlyOwner public {
-        uint allowedGuessesWordListContractAddressesLength = allowedGuessesWordListContractAddresses.length;
+    function appendToAllowedGuessesWordList(address allowedGuessesWordListContractAddress, uint startIndex, uint endIndex) onlyOwner public {
+        wl = WordList(allowedGuessesWordListContractAddress);
+        require(startIndex >= 0 && endIndex >= 0 && startIndex<= wl.getWordListLength() && endIndex <= wl.getWordListLength(), "Error: WORDLIST INDEX OUT OF RANGE");
         uint allowedWordsAdded = 0;
-        for(uint addressNumber = 0; addressNumber<allowedGuessesWordListContractAddressesLength;addressNumber++){
-            wl = WordList(allowedGuessesWordListContractAddresses[addressNumber]);
-            for(uint i=0;i<wl.getWordListLength();i++){
-                if(!allowedWords[wl.wordList(i)]){
-                    allowedWordsAdded++;
-                    allowedWords[wl.wordList(i)]=true;
-                }
+        for(uint i=startIndex;i<endIndex;i++){
+            if(!allowedWords[wl.wordList(i)]){
+                allowedWordsAdded++;
+                allowedWords[wl.wordList(i)]=true;
             }
         }
         emit AppendToAllowedGuessWordList(getCompletedGameCount(), allowedWordsSize, allowedWordsSize+allowedWordsAdded);
@@ -233,20 +227,20 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         emit SignUp(getCompletedGameCount(), msg.sender);
     }
 
-    event MakeGuess(uint indexed currentGameNumber, address indexed player, string guessedWord);
+    event MakeGuess(uint indexed currentGameNumber, address indexed player, bytes5 guessedWord);
     event VRFCall(uint indexed currentGameNumber, address indexed player, uint requestId);
-    function makeGuess(string calldata guessedWordString) public{
+    function makeGuess(bytes5 guessedWord) public{
         require(currGameState == GameState.IN_PROGRESS, "Error: EXPECTED GameState.IN_PROGRESS");
         require(enabled[msg.sender], "Error: PLAYER NOT SIGNED UP");
         require(numberOfGuesses[msg.sender] < 6, "Error: NUMBER OF GUESSES EXHAUSTED");
         require(!solved[msg.sender], "Error: PLAYER ALREADY GUESSED THE CORRECT WORD");
-        require(isValidWord(guessedWordString), "Error: INVALID INPUT WORD");
+        require(isValidWord(guessedWord), "Error: INVALID INPUT WORD");
         require(guessState[msg.sender] == UserGuessState.AWAITING_GUESS, "Error: EXPECTED UserGuessState.AWAITING_GUESS");
 
         assert(randomNumberRequestStateForUser[msg.sender] == RandomNumberRequestState.NO_REQUEST);
 
         // record the guess, change the player state, and begin fetching the random number
-        userGuesses[msg.sender][numberOfGuesses[msg.sender]] = guessedWordString;
+        userGuesses[msg.sender][numberOfGuesses[msg.sender]] = guessedWord;
         guessState[msg.sender] = UserGuessState.PROCESSING_GUESS;
 
         if(currWordListForUser[msg.sender].length > 1){
@@ -264,7 +258,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
             randomNumberRequestStateForUser[msg.sender] = RandomNumberRequestState.REQUESTED;
         }
 
-        emit MakeGuess(getCompletedGameCount(), msg.sender, guessedWordString);
+        emit MakeGuess(getCompletedGameCount(), msg.sender, guessedWord);
     }
 
     event GetGuessResult(uint indexed currentGameNumber, address indexed player);
@@ -284,16 +278,16 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
 
         WordleResult[5] memory result;
 
-        string memory guessedWordString = userGuesses[msg.sender][numberOfGuesses[msg.sender]];
+        bytes5 guessedWord = userGuesses[msg.sender][numberOfGuesses[msg.sender]];
 
-        string memory targetWord;
+        bytes5 targetWord;
         if(currWordListLength == 1){
             targetWord = currWordListForUser[msg.sender][0];
         } else {
             targetWord = currWordListForUser[msg.sender][vrfAddressToRandomNumber[msg.sender]%currWordListLength];
         }
 
-        result = getWordleComparison(targetWord, guessedWordString);
+        result = getWordleComparison(targetWord, guessedWord);
         guessStore[msg.sender][numberOfGuesses[msg.sender]] = result;
         numberOfGuesses[msg.sender]++;
 
@@ -303,7 +297,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         } else {
             uint i=0;
             while(i<currWordListForUser[msg.sender].length){
-                if(isSameWordleResult(guessedWordString, currWordListForUser[msg.sender][i], result)){
+                if(isSameWordleResult(guessedWord, currWordListForUser[msg.sender][i], result)){
                     i++;
                 } else {
                     currWordListForUser[msg.sender][i] = currWordListForUser[msg.sender][currWordListForUser[msg.sender].length-1];
@@ -419,22 +413,18 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         delete randomNumberRequestStateForUser[userAddress];
     }
 
-    function getWordleComparison(string memory targetWordString, string memory guessedWordString) internal view returns (WordleResult[5] memory){
+    function getWordleComparison(bytes5 targetWord, bytes5 guessedWord) internal view returns (WordleResult[5] memory){
 
         uint[26] memory letterCounts;
-        bytes memory targetWord = bytes(targetWordString);
-        bytes memory guessedWord = bytes(guessedWordString);
 
         WordleResult[5] memory result;
 
         for(uint i=0;i<5;i++){
-            letterCounts[getIntegerIndex(targetWord[i])]++;
-        }
-
-        for(uint i=0;i<5;i++){
             if(targetWord[i]==guessedWord[i]){
                 result[i]=WordleResult.GREEN;
-                letterCounts[getIntegerIndex(targetWord[i])]--;
+            }
+            else{
+                letterCounts[getIntegerIndex(targetWord[i])]++;
             }
         }
 
@@ -449,10 +439,8 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     }
 
 
-    function isSameWordleResult(string memory guessedWordString, string memory targetWordString, WordleResult[5] memory expectedResult) private view returns (bool){
+    function isSameWordleResult(bytes5 guessedWord, bytes5 targetWord, WordleResult[5] memory expectedResult) private view returns (bool){
 
-        bytes memory targetWord = bytes(targetWordString);
-        bytes memory guessedWord = bytes(guessedWordString);
 
         for(uint i=0;i<5;i++){
             if((expectedResult[i] == WordleResult.GREEN) != (guessedWord[i]==targetWord[i]))return false;
@@ -478,8 +466,8 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         return true;
     }
 
-    function isValidWord(string calldata guessedWordString) internal view returns (bool){
-        return allowedWords[guessedWordString];
+    function isValidWord(bytes5 guessedWord) internal view returns (bool){
+        return allowedWords[guessedWord];
     }
 
     function isAllGreen(WordleResult[5] memory guess) internal pure returns (bool) {
@@ -487,7 +475,7 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
     }
 
     function getIntegerIndex(bytes1 char) pure internal returns (uint) {
-        return uint(uint8(char) - uint8(bytes1("A")));
+        return uint(uint8(char) - 65);
     }
 
 }
