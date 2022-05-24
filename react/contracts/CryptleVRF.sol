@@ -344,7 +344,10 @@ contract WordleVRF is Ownable, VRFConsumerBaseV2{
         for(uint i=1;i<=6;i++){
             totalSplit += payouts[i]*solvedCountByGuesses[i];
         }
-        totalSplit += mySplit;
+
+        if(!solved[msg.sender]){
+            totalSplit += mySplit;
+        }
 
         return (total*mySplit)/totalSplit;
     }
