@@ -90,6 +90,17 @@ table {
   background-color: azure;
 }
 
+.green-payout-cell {
+  border: 1px solid green !important;
+  background-color: lightgreen;
+}
+
+.red-payout-cell {
+  border: 1px solid lightgray !important;
+  background-color: pink;
+}
+
+
 #cryptle-logo-container td {
   font-family: nunito;
   border: none;
@@ -123,6 +134,19 @@ table {
 button:hover {
   opacity: 0.6;
 }
+
+#live_reward {
+  font-family: Courier New;
+  font-size: 0.7em;
+}
+
+#player_count {
+  border: 1px grey !important;
+  background-color: azure;
+  font-family: Courier New;
+  font-size: 0.9em;
+}
+
 
 #payout {
   text-align: left;
