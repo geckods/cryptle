@@ -6,7 +6,7 @@
 Cryptle is Wordle for the Web3 World. 
 Players compete to guess their (randomly selected) words (that are different for each player). Players that guess their word in fewer guesses receive payouts for their performance. In essence, users can bet on their own Wordle game outcomes.
 
-Cryptle is our submission for the Chainlink Spring Hackthon 2022. Check it out [here!](https://devpost.com/software/cryptle).
+Cryptle is our submission for the Chainlink Spring Hackthon 2022. Check it out [here](https://devpost.com/software/cryptle)!
 
 ## Navigating this repository
 ### Note that only some relevant files and folders are mentioned in this directory tree.
